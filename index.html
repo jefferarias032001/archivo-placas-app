@@ -3,154 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Archivo de Placas</title>
+<title>TC Logistix · Archivo de Placas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <!-- Datos generados por convertir.py (si no existe, la app ofrece carga manual) -->
 <script src="data.js"></script>
 <style>
   :root{
-    --asfalto:#1B1E23;
-    --papel:#F6F5F1;
-    --placa:#FFC929;
-    --tinta:#16181C;
-    --verde:#1F9D58;
-    --gris:#69707B;
-    --linea:#E4E2DB;
+    --azul:#15418C;          /* azul corporativo TC */
+    --azul-claro:#2E62C4;
+    --marino:#0B1F47;        /* fondo del encabezado */
+    --marino-2:#122E66;
+    --naranja:#F39A1F;       /* acento de marca */
+    --naranja-suave:#FDF0DC;
+    --fondo:#F3F5FA;
+    --tinta:#16223B;
+    --gris:#5E6B85;
+    --linea:#E2E7F0;
     --blanco:#FFFFFF;
+    --verde:#1F9D58;
+    --rojo-suave:#94A3B8;
+    --sombra:0 1px 3px rgba(11,31,71,.08), 0 4px 14px rgba(11,31,71,.06);
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
   body{
-    font-family:'Barlow',system-ui,-apple-system,sans-serif;
-    background:var(--papel);
+    font-family:'Manrope',system-ui,-apple-system,sans-serif;
+    background:var(--fondo);
     color:var(--tinta);
     font-size:15px;
-    line-height:1.45;
+    line-height:1.5;
   }
   @media (prefers-reduced-motion: reduce){
     *,*::before,*::after{animation:none!important;transition:none!important}
   }
+  .ico{width:16px;height:16px;flex-shrink:0;vertical-align:-3px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
-  /* ---------- Barra superior ---------- */
+  /* ---------- Encabezado ---------- */
   header{
-    background:var(--asfalto);
+    background:linear-gradient(105deg, var(--marino) 0%, var(--marino-2) 55%, var(--azul) 100%);
     color:#fff;
-    padding:14px 24px;
+    padding:14px 28px;
     display:flex;
     align-items:center;
-    gap:18px;
+    gap:20px;
     flex-wrap:wrap;
     position:sticky;top:0;z-index:30;
+    box-shadow:0 2px 14px rgba(11,31,71,.35);
   }
-  .logo{
-    display:flex;align-items:center;gap:12px;
+  header::after{ /* franja naranja de marca */
+    content:"";
+    position:absolute;left:0;right:0;bottom:0;height:3px;
+    background:linear-gradient(90deg, var(--naranja), #FFC461 60%, transparent);
   }
-  .logo .mini-placa{
-    background:var(--placa);
-    color:var(--tinta);
-    font-family:'Barlow Condensed',sans-serif;
-    font-weight:700;
-    font-size:18px;
-    letter-spacing:2px;
-    padding:3px 10px;
-    border-radius:4px;
-    border:2px solid var(--tinta);
-  }
-  .logo h1{
-    font-family:'Barlow Condensed',sans-serif;
-    font-weight:600;
-    font-size:21px;
-    letter-spacing:1.5px;
-    text-transform:uppercase;
-  }
-  .stats{
-    margin-left:auto;
-    display:flex;
-    gap:22px;
-    font-size:13px;
-    color:#B9BDC4;
-  }
-  .stats b{color:#fff;font-weight:600;font-size:15px;display:block;line-height:1.1}
+  .logo{display:flex;align-items:center;gap:14px;min-width:0}
+  .logo img{height:46px;width:auto;display:block}
+  .logo .titulo{display:flex;flex-direction:column;line-height:1.15}
+  .logo .titulo b{font-weight:800;font-size:17px;letter-spacing:.3px}
+  .logo .titulo span{font-size:11.5px;color:#A9BCE3;font-weight:600;letter-spacing:1.6px;text-transform:uppercase}
+  .header-acciones{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .btn{
-    font-family:'Barlow',sans-serif;
-    font-weight:600;
-    font-size:14px;
-    border:none;border-radius:6px;
+    font-family:'Manrope',sans-serif;
+    font-weight:700;font-size:13.5px;
+    border:none;border-radius:8px;
     padding:9px 16px;
     cursor:pointer;
-    transition:transform .08s ease, opacity .15s ease;
+    display:inline-flex;align-items:center;gap:7px;
+    transition:transform .1s ease, box-shadow .15s ease, background .15s ease;
   }
-  .btn:active{transform:scale(.97)}
-  .btn:focus-visible{outline:3px solid var(--placa);outline-offset:2px}
-  .btn-amarillo{background:var(--placa);color:var(--tinta)}
-  .btn-borde{background:transparent;color:#fff;border:1px solid #4A4F57}
-  .btn-borde:hover{border-color:#fff}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:translateY(0) scale(.98)}
+  .btn:focus-visible{outline:3px solid var(--naranja);outline-offset:2px}
+  .btn-naranja{background:var(--naranja);color:#23150A;box-shadow:0 3px 10px rgba(243,154,31,.4)}
+  .btn-naranja:hover{background:#FFAA33}
+  .btn-fantasma{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .btn-fantasma:hover{background:rgba(255,255,255,.16)}
 
-  /* ---------- Pantalla de carga ---------- */
-  #zonaCarga{
-    max-width:680px;
-    margin:9vh auto;
-    padding:0 20px;
-    text-align:center;
+  /* ---------- Franja de indicadores (KPIs) ---------- */
+  #kpis{
+    display:none;
+    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+    gap:12px;
+    max-width:1280px;
+    margin:18px auto 0;
+    padding:0 28px;
   }
-  #zonaCarga .placa-grande{
-    display:inline-block;
-    background:var(--placa);
-    border:3px solid var(--tinta);
-    border-radius:8px;
-    padding:12px 34px;
-    font-family:'Barlow Condensed',sans-serif;
-    font-weight:700;
-    font-size:42px;
-    letter-spacing:8px;
-    margin-bottom:8px;
-    position:relative;
-  }
-  #zonaCarga .placa-grande::before,
-  #zonaCarga .placa-grande::after{
-    content:"";
-    position:absolute;top:7px;width:7px;height:7px;
-    background:var(--tinta);border-radius:50%;opacity:.55;
-  }
-  #zonaCarga .placa-grande::before{left:10px}
-  #zonaCarga .placa-grande::after{right:10px}
-  #zonaCarga h2{
-    font-family:'Barlow Condensed',sans-serif;
-    font-size:30px;font-weight:600;letter-spacing:.5px;
-    margin:18px 0 8px;
-  }
-  #zonaCarga p{color:var(--gris);max-width:480px;margin:0 auto 24px}
-  #dropArea{
-    border:2px dashed #C9C6BC;
-    border-radius:12px;
-    padding:42px 24px;
+  .kpi{
     background:var(--blanco);
-    cursor:pointer;
+    border:1px solid var(--linea);
+    border-radius:12px;
+    padding:14px 16px;
+    display:flex;align-items:center;gap:12px;
+    box-shadow:var(--sombra);
+  }
+  .kpi .icono{
+    width:38px;height:38px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--naranja-suave);color:var(--naranja);
+  }
+  .kpi .icono.azul{background:#E5EDFB;color:var(--azul)}
+  .kpi .icono.verde{background:#E2F5EA;color:var(--verde)}
+  .kpi .icono svg{width:19px;height:19px}
+  .kpi b{display:block;font-size:19px;font-weight:800;line-height:1.1}
+  .kpi span{font-size:11.5px;color:var(--gris);font-weight:600;letter-spacing:.4px;text-transform:uppercase}
+
+  /* ---------- Pantalla de carga manual (respaldo) ---------- */
+  #zonaCarga{max-width:660px;margin:8vh auto;padding:0 20px;text-align:center}
+  #zonaCarga img{height:74px;margin-bottom:18px;filter:drop-shadow(0 2px 6px rgba(11,31,71,.2))}
+  #zonaCarga h2{font-size:26px;font-weight:800;margin-bottom:8px}
+  #zonaCarga p{color:var(--gris);max-width:480px;margin:0 auto 22px}
+  #dropArea{
+    border:2px dashed #BFCBE2;border-radius:14px;
+    padding:40px 24px;background:var(--blanco);cursor:pointer;
     transition:border-color .15s ease, background .15s ease;
+    box-shadow:var(--sombra);
   }
-  #dropArea:hover,#dropArea.arrastrando{border-color:var(--tinta);background:#FFFDF4}
-  #dropArea:focus-visible{outline:3px solid var(--placa);outline-offset:3px}
-  #dropArea strong{display:block;font-size:17px;margin-bottom:4px}
+  #dropArea:hover,#dropArea.arrastrando{border-color:var(--azul);background:#F7FAFF}
+  #dropArea:focus-visible{outline:3px solid var(--naranja);outline-offset:3px}
+  #dropArea strong{display:block;font-size:16.5px;margin-bottom:4px}
   #dropArea span{color:var(--gris);font-size:13px}
-  .nota-privacidad{
-    margin-top:18px;font-size:12.5px;color:var(--gris);
-  }
-  #msgError{
-    margin-top:16px;color:#B3261E;font-weight:500;display:none;
-  }
+  .nota-privacidad{margin-top:16px;font-size:12.5px;color:var(--gris)}
+  #msgError{margin-top:14px;color:#B3261E;font-weight:600;display:none}
 
   /* ---------- Filtros ---------- */
   #barraFiltros{
     display:none;
     background:var(--blanco);
     border-bottom:1px solid var(--linea);
-    padding:14px 24px;
-    position:sticky;
-    top:62px;
-    z-index:20;
+    padding:14px 28px;
+    position:sticky;top:78px;z-index:20;
+    box-shadow:0 4px 12px rgba(11,31,71,.04);
+    margin-top:18px;
   }
   .fila-filtros{
     display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;
@@ -158,141 +142,152 @@
   }
   .campo{display:flex;flex-direction:column;gap:4px}
   .campo label{
-    font-size:11px;font-weight:600;letter-spacing:.8px;
+    font-size:10.5px;font-weight:800;letter-spacing:1px;
     text-transform:uppercase;color:var(--gris);
+    display:flex;align-items:center;gap:5px;
   }
+  .campo label .ico{width:12px;height:12px}
   .campo input,.campo select{
-    font-family:'Barlow',sans-serif;
-    font-size:14px;
-    padding:8px 10px;
-    border:1px solid #D5D2C9;
-    border-radius:6px;
-    background:#FCFBF8;
-    min-width:150px;
+    font-family:'Manrope',sans-serif;font-size:14px;font-weight:500;
+    padding:9px 11px;
+    border:1.5px solid #D8DFEC;border-radius:8px;
+    background:#FAFBFE;min-width:150px;color:var(--tinta);
+    transition:border-color .12s ease;
   }
-  .campo input:focus,.campo select:focus{
-    outline:2px solid var(--tinta);outline-offset:1px;
-  }
-  #buscador{min-width:240px}
+  .campo input:hover,.campo select:hover{border-color:#B7C4DC}
+  .campo input:focus,.campo select:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(21,65,140,.12)}
+  #buscador{min-width:250px}
   #chipsTipologia{
     max-width:1280px;margin:10px auto 0;
     display:flex;gap:8px;flex-wrap:wrap;
   }
   .chip{
-    font-family:'Barlow Condensed',sans-serif;
-    font-size:14px;font-weight:600;letter-spacing:.6px;
-    padding:5px 12px;
-    border-radius:99px;
-    border:1px solid #D5D2C9;
-    background:#FCFBF8;
-    cursor:pointer;
-    color:var(--tinta);
+    font-size:12.5px;font-weight:700;
+    padding:6px 13px;border-radius:99px;
+    border:1.5px solid #D8DFEC;background:#FAFBFE;
+    cursor:pointer;color:var(--azul);
+    transition:all .12s ease;
+    display:inline-flex;align-items:center;gap:6px;
   }
-  .chip:focus-visible{outline:2px solid var(--tinta);outline-offset:1px}
-  .chip.activo{
-    background:var(--tinta);color:var(--placa);border-color:var(--tinta);
-  }
-  .chip small{color:inherit;opacity:.65;font-size:12px;margin-left:4px}
+  .chip:hover{border-color:var(--azul)}
+  .chip:focus-visible{outline:2px solid var(--naranja);outline-offset:1px}
+  .chip.activo{background:var(--azul);color:#fff;border-color:var(--azul);box-shadow:0 3px 10px rgba(21,65,140,.3)}
+  .chip small{opacity:.65;font-size:11px;font-weight:700}
 
   /* ---------- Resultados ---------- */
-  main{max-width:1280px;margin:0 auto;padding:20px 24px 60px}
+  main{max-width:1280px;margin:0 auto;padding:20px 28px 60px}
   #resumen{
-    display:none;
-    font-size:14px;color:var(--gris);margin-bottom:14px;
+    display:none;font-size:13.5px;color:var(--gris);margin-bottom:14px;font-weight:600;
   }
   #resumen b{color:var(--tinta)}
   #grid{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(330px,1fr));
+    grid-template-columns:repeat(auto-fill,minmax(335px,1fr));
     gap:14px;
   }
   .tarjeta{
     background:var(--blanco);
     border:1px solid var(--linea);
-    border-radius:10px;
-    padding:14px 16px;
-    display:flex;flex-direction:column;gap:10px;
+    border-radius:14px;
+    padding:16px;
+    display:flex;flex-direction:column;gap:11px;
+    box-shadow:var(--sombra);
+    transition:transform .14s ease, box-shadow .14s ease;
+    animation:aparecer .25s ease both;
   }
+  @keyframes aparecer{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .tarjeta:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(11,31,71,.13)}
   .tarjeta-cabeza{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .badge-placa{
-    background:var(--placa);
-    border:2px solid var(--tinta);
-    border-radius:5px;
+    background:linear-gradient(180deg,#FFB23E,var(--naranja));
+    border:2px solid var(--marino);
+    border-radius:6px;
     font-family:'Barlow Condensed',sans-serif;
-    font-weight:700;
-    font-size:21px;
-    letter-spacing:3px;
-    padding:2px 12px;
-    position:relative;
+    font-weight:700;font-size:21px;letter-spacing:3px;
+    color:var(--marino);
+    padding:2px 13px;position:relative;
+    box-shadow:0 2px 6px rgba(243,154,31,.35);
   }
   .badge-placa::before,.badge-placa::after{
-    content:"";position:absolute;top:4px;width:4px;height:4px;
-    background:var(--tinta);border-radius:50%;opacity:.5;
+    content:"";position:absolute;top:5px;width:4px;height:4px;
+    background:var(--marino);border-radius:50%;opacity:.55;
   }
-  .badge-placa::before{left:4px}
-  .badge-placa::after{right:4px}
+  .badge-placa::before{left:5px}
+  .badge-placa::after{right:5px}
   .chip-tipo{
-    font-family:'Barlow Condensed',sans-serif;
-    font-size:13px;font-weight:600;letter-spacing:.8px;
-    background:#EFEDE6;border-radius:4px;padding:3px 8px;
-    color:#3D4046;
+    font-size:11.5px;font-weight:800;letter-spacing:.6px;
+    background:#E5EDFB;color:var(--azul);
+    border-radius:6px;padding:4px 9px;
+    display:inline-flex;align-items:center;gap:5px;
   }
+  .chip-tipo .ico{width:13px;height:13px}
   .estado{
     margin-left:auto;
-    font-size:11.5px;font-weight:600;letter-spacing:.5px;
-    display:flex;align-items:center;gap:5px;color:var(--gris);
+    font-size:10.5px;font-weight:800;letter-spacing:.6px;
+    display:flex;align-items:center;gap:5px;
+    color:var(--rojo-suave);
+    background:#F1F4F9;border-radius:99px;padding:4px 10px;
   }
-  .estado .punto{width:8px;height:8px;border-radius:50%;background:#C2C6CC}
-  .estado.activo{color:var(--verde)}
-  .estado.activo .punto{background:var(--verde)}
+  .estado .punto{width:7px;height:7px;border-radius:50%;background:var(--rojo-suave)}
+  .estado.activo{color:var(--verde);background:#E2F5EA}
+  .estado.activo .punto{background:var(--verde);box-shadow:0 0 0 3px rgba(31,157,88,.18)}
   .vehiculo{
-    font-size:13.5px;color:#3D4046;
+    font-size:13px;color:#41506E;
     border-bottom:1px solid var(--linea);
-    padding-bottom:10px;
+    padding-bottom:11px;
+    display:flex;gap:8px;align-items:flex-start;
   }
-  .vehiculo b{font-weight:600}
-  .contacto{display:flex;align-items:baseline;gap:8px;font-size:13.5px}
+  .vehiculo .ico{margin-top:2px;color:var(--azul)}
+  .vehiculo b{font-weight:700}
+  .contacto{display:flex;align-items:center;gap:9px;font-size:13.5px}
   .contacto .rol{
-    font-family:'Barlow Condensed',sans-serif;
-    font-size:11.5px;font-weight:700;letter-spacing:1px;
-    color:var(--gris);width:84px;flex-shrink:0;
-    text-transform:uppercase;
+    width:30px;height:30px;border-radius:8px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
   }
-  .contacto .nombre{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .contacto .rol svg{width:15px;height:15px}
+  .rol-cond{background:#E5EDFB;color:var(--azul)}
+  .rol-tene{background:var(--naranja-suave);color:#C97A0A}
+  .rol-prop{background:#EBE9FA;color:#5B4FBE}
+  .contacto .datos{flex:1;min-width:0;line-height:1.25}
+  .contacto .datos .etq{font-size:9.5px;font-weight:800;letter-spacing:1px;color:var(--gris);text-transform:uppercase;display:block}
+  .contacto .nombre{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
   .contacto a{
-    color:var(--tinta);font-weight:600;text-decoration:none;
-    border-bottom:1.5px solid var(--placa);
-    white-space:nowrap;
+    color:var(--azul);font-weight:800;text-decoration:none;font-size:13px;
+    display:inline-flex;align-items:center;gap:5px;
+    padding:5px 10px;border-radius:8px;background:#F1F5FC;
+    white-space:nowrap;transition:background .12s ease;
   }
-  .contacto a:hover{background:#FFF3CC}
-  .contacto .sin-dato{color:#B5B2A8}
+  .contacto a:hover{background:#E0EAFA}
+  .contacto a .ico{width:13px;height:13px}
+  .sin-dato{color:#A8B3C9;font-weight:500}
   .ver-mas{
     align-self:flex-start;
     background:none;border:none;cursor:pointer;
-    font-family:'Barlow',sans-serif;
-    font-size:12.5px;font-weight:600;color:var(--gris);
-    padding:2px 0;
+    font-family:'Manrope',sans-serif;
+    font-size:12.5px;font-weight:700;color:var(--gris);
+    padding:2px 0;display:inline-flex;align-items:center;gap:5px;
   }
-  .ver-mas:hover{color:var(--tinta)}
+  .ver-mas:hover{color:var(--azul)}
   .detalle{
-    display:none;
-    font-size:12.5px;color:#4A4E55;
-    background:#FAF9F5;border-radius:6px;padding:10px 12px;
+    display:none;font-size:12.5px;color:#41506E;
+    background:#F7F9FD;border:1px solid var(--linea);
+    border-radius:10px;padding:11px 13px;
   }
   .detalle.abierto{display:block}
-  .detalle div{margin-bottom:3px}
-  .detalle b{font-weight:600;color:var(--gris);font-size:11px;letter-spacing:.5px;text-transform:uppercase}
-  #vacio{
-    display:none;text-align:center;padding:60px 20px;color:var(--gris);
-  }
+  .detalle div{margin-bottom:4px}
+  .detalle b{font-weight:800;color:var(--gris);font-size:10.5px;letter-spacing:.6px;text-transform:uppercase}
+  #vacio{display:none;text-align:center;padding:60px 20px;color:var(--gris)}
   #pieAcciones{display:none;text-align:center;margin-top:26px}
-  #btnMas{background:var(--tinta);color:#fff}
+  #btnMas{background:var(--azul);color:#fff;box-shadow:0 4px 14px rgba(21,65,140,.3)}
+  #btnMas:hover{background:var(--azul-claro)}
 
-  @media (max-width:640px){
-    header{padding:12px 14px;gap:10px}
-    .stats{display:none}
-    #barraFiltros{top:58px;padding:10px 14px}
-    main{padding:14px 14px 50px}
+  @media (max-width:680px){
+    header{padding:12px 16px;gap:10px}
+    .logo img{height:36px}
+    .logo .titulo{display:none}
+    #kpis{padding:0 16px;grid-template-columns:repeat(2,1fr)}
+    #barraFiltros{top:66px;padding:10px 16px}
+    main{padding:14px 16px 50px}
     #grid{grid-template-columns:1fr}
     .campo input,.campo select,#buscador{min-width:0;width:100%}
     .campo{flex:1 1 45%}
@@ -302,19 +297,54 @@
 </head>
 <body>
 
+<!-- Iconos SVG reutilizables -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-camion" viewBox="0 0 24 24"><path d="M1 7h12v9H1zM13 10h4l3 3v3h-7z"/><circle cx="6" cy="18" r="2"/><circle cx="16.5" cy="18" r="2"/></symbol>
+    <symbol id="i-volante" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/><path d="M3.5 10.5 9.7 12M20.5 10.5 14.3 12M12 14.5V21"/></symbol>
+    <symbol id="i-llave" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 21 2M14 8l3 3M18 4l2.5 2.5"/></symbol>
+    <symbol id="i-maletin" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></symbol>
+    <symbol id="i-tel" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.13.97.36 1.9.7 2.8a2 2 0 0 1-.45 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.25a2 2 0 0 1 2.1-.45c.9.34 1.83.57 2.8.7a2 2 0 0 1 1.7 2Z"/></symbol>
+    <symbol id="i-buscar" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-filtro" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v5l-4 2v-7L3 5z"/></symbol>
+    <symbol id="i-descargar" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></symbol>
+    <symbol id="i-recargar" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.3M21 3v6h-6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 5-5.5"/></symbol>
+    <symbol id="i-capas" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 17l9 5 9-5"/></symbol>
+    <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  </defs>
+</svg>
+
 <header>
   <div class="logo">
-    <span class="mini-placa">ABC·123</span>
-    <h1>Archivo de Placas</h1>
+    <img src="logo.png" alt="TC Logistix" onerror="this.style.display='none'">
+    <div class="titulo">
+      <b>Archivo de Placas</b>
+      <span>Gestión del parque automotor</span>
+    </div>
   </div>
-  <div class="stats" id="statsHeader"></div>
-  <button class="btn btn-borde" id="btnCambiarArchivo" style="display:none">Cargar otro archivo</button>
-  <button class="btn btn-amarillo" id="btnExportar" style="display:none">Exportar filtrado (CSV)</button>
+  <div class="header-acciones">
+    <button class="btn btn-fantasma" id="btnCambiarArchivo" style="display:none">
+      <svg class="ico"><use href="#i-recargar"/></svg> Cargar otro archivo
+    </button>
+    <button class="btn btn-naranja" id="btnExportar" style="display:none">
+      <svg class="ico"><use href="#i-descargar"/></svg> Exportar CSV
+    </button>
+  </div>
 </header>
 
-<!-- Pantalla inicial -->
+<!-- Indicadores -->
+<section id="kpis" aria-label="Indicadores generales">
+  <div class="kpi"><div class="icono azul"><svg><use href="#i-camion"/></svg></div><div><b id="kpiPlacas">—</b><span>Placas únicas</span></div></div>
+  <div class="kpi"><div class="icono verde"><svg><use href="#i-check"/></svg></div><div><b id="kpiActivas">—</b><span>Activas</span></div></div>
+  <div class="kpi"><div class="icono"><svg><use href="#i-capas"/></svg></div><div><b id="kpiTipologias">—</b><span>Tipologías</span></div></div>
+  <div class="kpi"><div class="icono azul"><svg><use href="#i-reloj"/></svg></div><div><b id="kpiFecha">—</b><span>Última actualización</span></div></div>
+</section>
+
+<!-- Pantalla de carga manual (solo si falta data.js) -->
 <section id="zonaCarga">
-  <div class="placa-grande">ABC·123</div>
+  <img src="logo.png" alt="TC Logistix" onerror="this.style.display='none'">
   <h2>Consulta de vehículos, conductores y propietarios</h2>
   <p>No encontré el archivo <b>data.js</b> con los datos (se genera ejecutando <b>actualizar.bat</b>). Mientras tanto puedes cargar el Excel manualmente:</p>
   <div id="dropArea" tabindex="0" role="button" aria-label="Seleccionar archivo de Excel">
@@ -323,30 +353,30 @@
   </div>
   <input type="file" id="inputArchivo" accept=".xlsx,.xlsm,.xls" hidden>
   <p id="msgError"></p>
-  <p class="nota-privacidad">🔒 Los datos se procesan únicamente en tu navegador. Nada se sube a internet ni se guarda en el repositorio.</p>
+  <p class="nota-privacidad">🔒 Los datos se procesan únicamente en tu navegador.</p>
 </section>
 
 <!-- Filtros -->
 <section id="barraFiltros">
   <div class="fila-filtros">
     <div class="campo full" style="flex:1">
-      <label for="buscador">Buscar</label>
+      <label for="buscador"><svg class="ico"><use href="#i-buscar"/></svg> Buscar</label>
       <input id="buscador" type="search" placeholder="Placa, nombre, cédula o celular…">
     </div>
     <div class="campo">
-      <label for="fTipologia">Tipología</label>
+      <label for="fTipologia"><svg class="ico"><use href="#i-camion"/></svg> Tipología</label>
       <select id="fTipologia"><option value="">Todas</option></select>
     </div>
     <div class="campo">
-      <label for="fCarroceria">Carrocería</label>
+      <label for="fCarroceria"><svg class="ico"><use href="#i-capas"/></svg> Carrocería</label>
       <select id="fCarroceria"><option value="">Todas</option></select>
     </div>
     <div class="campo">
-      <label for="fMarca">Marca</label>
+      <label for="fMarca"><svg class="ico"><use href="#i-filtro"/></svg> Marca</label>
       <select id="fMarca"><option value="">Todas</option></select>
     </div>
     <div class="campo">
-      <label for="fEstado">Estado</label>
+      <label for="fEstado"><svg class="ico"><use href="#i-check"/></svg> Estado</label>
       <select id="fEstado">
         <option value="">Todos</option>
         <option value="SI">Activo (SI)</option>
@@ -355,7 +385,7 @@
     </div>
     <div class="campo">
       <label>&nbsp;</label>
-      <button class="btn btn-borde" style="color:var(--tinta);border-color:#D5D2C9" id="btnLimpiar">Limpiar</button>
+      <button class="btn" style="background:#EEF1F7;color:var(--tinta)" id="btnLimpiar">Limpiar</button>
     </div>
   </div>
   <div id="chipsTipologia" role="group" aria-label="Filtros rápidos de tipología"></div>
@@ -377,7 +407,7 @@
 (function(){
   "use strict";
 
-  var datos = [];        // registros únicos por placa
+  var datos = [];
   var filtrados = [];
   var visibles = 0;
   var POR_PAGINA = 60;
@@ -402,7 +432,7 @@
   }
   function aFecha(v){
     if(v instanceof Date) return v;
-    if(typeof v === "number"){ // serial de Excel
+    if(typeof v === "number"){
       return new Date(Math.round((v - 25569) * 86400 * 1000));
     }
     if(typeof v === "string"){
@@ -421,10 +451,10 @@
   function telLink(cel){
     var c = limpio(cel).replace(/[^\d+]/g,"");
     if(c.length < 7) return '<span class="sin-dato">sin celular</span>';
-    return '<a href="tel:'+esc(c)+'">'+esc(limpio(cel))+'</a>';
+    return '<a href="tel:'+esc(c)+'"><svg class="ico"><use href="#i-tel"/></svg>'+esc(limpio(cel))+'</a>';
   }
 
-  /* ---------- carga del archivo ---------- */
+  /* ---------- carga manual (respaldo) ---------- */
   var drop = $("dropArea"), input = $("inputArchivo");
   drop.addEventListener("click", function(){ input.click(); });
   drop.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); input.click(); }});
@@ -450,7 +480,6 @@
     lector.onload = function(e){
       try{
         var wb = XLSX.read(new Uint8Array(e.target.result), {type:"array", cellDates:true});
-        // buscar la hoja que tenga columna PLACA y TIPOLOGIA
         var hoja = null;
         for(var i=0;i<wb.SheetNames.length;i++){
           var ws = wb.Sheets[wb.SheetNames[i]];
@@ -470,7 +499,6 @@
   }
 
   function procesar(crudos, nombreHoja){
-    // mapear y deduplicar por placa quedándonos con la fecha de creación más reciente
     var porPlaca = {};
     var total = 0;
     crudos.forEach(function(r){
@@ -523,25 +551,27 @@
     iniciar(total, nombreHoja, null);
   }
 
-  /* arranque de la interfaz una vez hay datos (de data.js o de un Excel cargado) */
+  /* arranque de la interfaz una vez hay datos */
   function iniciar(total, nombreHoja, actualizado){
     poblarSelect("fTipologia", contar(datos, "tipoBase"));
     poblarSelect("fCarroceria", contar(datos, "carroceria"));
     poblarSelect("fMarca", contar(datos, "marca"));
     pintarChips(contar(datos, "tipoBase"));
 
-    $("statsHeader").innerHTML =
-      "<div><b>"+datos.length.toLocaleString("es-CO")+"</b>placas únicas</div>"+
-      "<div><b>"+total.toLocaleString("es-CO")+"</b>registros leídos</div>"+
-      (actualizado
-        ? "<div><b>"+esc(actualizado)+"</b>última actualización</div>"
-        : "<div><b>"+esc(nombreHoja)+"</b>hoja de datos</div>");
+    var activas = datos.filter(function(d){ return d.estado === "SI"; }).length;
+    var tipos = contar(datos, "tipoBase").length;
+    $("kpiPlacas").textContent = datos.length.toLocaleString("es-CO");
+    $("kpiActivas").textContent = activas.toLocaleString("es-CO");
+    $("kpiTipologias").textContent = tipos;
+    $("kpiFecha").textContent = actualizado ? actualizado.split(" ")[0] : "hoy";
+    $("kpiFecha").title = actualizado || "";
 
     $("zonaCarga").style.display = "none";
+    $("kpis").style.display = "grid";
     $("barraFiltros").style.display = "block";
     $("resumen").style.display = "block";
-    $("btnCambiarArchivo").style.display = "inline-block";
-    $("btnExportar").style.display = "inline-block";
+    $("btnCambiarArchivo").style.display = "inline-flex";
+    $("btnExportar").style.display = "inline-flex";
     aplicarFiltros();
   }
 
@@ -636,10 +666,13 @@
     $("pieAcciones").style.display = (visibles < filtrados.length) ? "block" : "none";
   }
 
-  function filaContacto(rol, p){
+  function filaContacto(rol, clase, icono, p){
     return '<div class="contacto">' +
-      '<span class="rol">'+rol+'</span>' +
-      '<span class="nombre">'+(p.nombre ? esc(p.nombre) : '<span class="sin-dato">sin nombre</span>')+'</span>' +
+      '<span class="rol '+clase+'" title="'+rol+'"><svg><use href="#'+icono+'"/></svg></span>' +
+      '<span class="datos">' +
+        '<span class="etq">'+rol+'</span>' +
+        '<span class="nombre">'+(p.nombre ? esc(p.nombre) : '<span class="sin-dato">sin nombre</span>')+'</span>' +
+      '</span>' +
       telLink(p.celular) +
     '</div>';
   }
@@ -655,16 +688,17 @@
     el.innerHTML =
       '<div class="tarjeta-cabeza">' +
         '<span class="badge-placa">'+esc(d.placa)+'</span>' +
-        '<span class="chip-tipo">'+esc(d.tipologia)+'</span>' +
+        '<span class="chip-tipo"><svg class="ico"><use href="#i-camion"/></svg>'+esc(d.tipologia)+'</span>' +
         '<span class="estado'+(d.estado==="SI"?" activo":"")+'"><span class="punto"></span>'+(d.estado==="SI"?"ACTIVO":"INACTIVO")+'</span>' +
       '</div>' +
-      '<div class="vehiculo">'+(veh ? esc(veh) : '<span class="sin-dato">Sin datos del vehículo</span>') +
+      '<div class="vehiculo"><svg class="ico"><use href="#i-camion"/></svg><div>' +
+        (veh ? esc(veh) : '<span class="sin-dato">Sin datos del vehículo</span>') +
         (extra.length ? '<br>'+extra.join(" &nbsp;·&nbsp; ") : "") +
-      '</div>' +
-      filaContacto("Conductor", d.cond) +
-      filaContacto("Tenedor", d.tene) +
-      filaContacto("Propietario", d.prop) +
-      '<button class="ver-mas" type="button">Ver detalle ▾</button>' +
+      '</div></div>' +
+      filaContacto("Conductor", "rol-cond", "i-volante", d.cond) +
+      filaContacto("Tenedor", "rol-tene", "i-llave", d.tene) +
+      filaContacto("Propietario", "rol-prop", "i-maletin", d.prop) +
+      '<button class="ver-mas" type="button"><svg class="ico"><use href="#i-chevron"/></svg>Ver detalle</button>' +
       '<div class="detalle">' +
         det("Conductor", d.cond, true) + det("Tenedor", d.tene) + det("Propietario", d.prop) +
       '</div>';
@@ -672,7 +706,7 @@
     var btn = el.querySelector(".ver-mas"), det_ = el.querySelector(".detalle");
     btn.addEventListener("click", function(){
       var abierto = det_.classList.toggle("abierto");
-      btn.textContent = abierto ? "Ocultar detalle ▴" : "Ver detalle ▾";
+      btn.innerHTML = '<svg class="ico" style="'+(abierto?'transform:rotate(180deg)':'')+'"><use href="#i-chevron"/></svg>' + (abierto ? "Ocultar detalle" : "Ver detalle");
     });
     return el;
   }

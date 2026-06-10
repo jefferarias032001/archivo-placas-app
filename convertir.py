@@ -23,7 +23,7 @@ from datetime import datetime, date
 #   C:/Users/TuUsuario/OneDrive/Documentos/ARCHIVO DE PLACAS.xlsx
 # (usa barras / o dobles \\ — no barras simples \)
 # ============================================================
-RUTA_EXCEL = "C:/Users/TU_USUARIO/OneDrive - TU_EMPRESA/ARCHIVO DE PLACAS.xlsx"
+RUTA_EXCEL = "C:/Users/jarias/OneDrive - TRACTOCAR LOGISTICS SAS/Archivos de Data Quality Analyst Tractocar - Analisis Operacion y Venta/21. Archivo de informacion de flota\ARCHIVO DE PLACAS.xlsx"
 
 SALIDA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.js")
 
