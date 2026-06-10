@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archivo de Placas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- Datos generados por convertir.py (si no existe, la app ofrece carga manual) -->
+<script src="data.js"></script>
+<style>
+  :root{
+    --asfalto:#1B1E23;
+    --papel:#F6F5F1;
+    --placa:#FFC929;
+    --tinta:#16181C;
+    --verde:#1F9D58;
+    --gris:#69707B;
+    --linea:#E4E2DB;
+    --blanco:#FFFFFF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Barlow',system-ui,-apple-system,sans-serif;
+    background:var(--papel);
+    color:var(--tinta);
+    font-size:15px;
+    line-height:1.45;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+
+  /* ---------- Barra superior ---------- */
+  header{
+    background:var(--asfalto);
+    color:#fff;
+    padding:14px 24px;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+    position:sticky;top:0;z-index:30;
+  }
+  .logo{
+    display:flex;align-items:center;gap:12px;
+  }
+  .logo .mini-placa{
+    background:var(--placa);
+    color:var(--tinta);
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    font-size:18px;
+    letter-spacing:2px;
+    padding:3px 10px;
+    border-radius:4px;
+    border:2px solid var(--tinta);
+  }
+  .logo h1{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:600;
+    font-size:21px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+  }
+  .stats{
+    margin-left:auto;
+    display:flex;
+    gap:22px;
+    font-size:13px;
+    color:#B9BDC4;
+  }
+  .stats b{color:#fff;font-weight:600;font-size:15px;display:block;line-height:1.1}
+  .btn{
+    font-family:'Barlow',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    border:none;border-radius:6px;
+    padding:9px 16px;
+    cursor:pointer;
+    transition:transform .08s ease, opacity .15s ease;
+  }
+  .btn:active{transform:scale(.97)}
+  .btn:focus-visible{outline:3px solid var(--placa);outline-offset:2px}
+  .btn-amarillo{background:var(--placa);color:var(--tinta)}
+  .btn-borde{background:transparent;color:#fff;border:1px solid #4A4F57}
+  .btn-borde:hover{border-color:#fff}
+
+  /* ---------- Pantalla de carga ---------- */
+  #zonaCarga{
+    max-width:680px;
+    margin:9vh auto;
+    padding:0 20px;
+    text-align:center;
+  }
+  #zonaCarga .placa-grande{
+    display:inline-block;
+    background:var(--placa);
+    border:3px solid var(--tinta);
+    border-radius:8px;
+    padding:12px 34px;
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    font-size:42px;
+    letter-spacing:8px;
+    margin-bottom:8px;
+    position:relative;
+  }
+  #zonaCarga .placa-grande::before,
+  #zonaCarga .placa-grande::after{
+    content:"";
+    position:absolute;top:7px;width:7px;height:7px;
+    background:var(--tinta);border-radius:50%;opacity:.55;
+  }
+  #zonaCarga .placa-grande::before{left:10px}
+  #zonaCarga .placa-grande::after{right:10px}
+  #zonaCarga h2{
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:30px;font-weight:600;letter-spacing:.5px;
+    margin:18px 0 8px;
+  }
+  #zonaCarga p{color:var(--gris);max-width:480px;margin:0 auto 24px}
+  #dropArea{
+    border:2px dashed #C9C6BC;
+    border-radius:12px;
+    padding:42px 24px;
+    background:var(--blanco);
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  #dropArea:hover,#dropArea.arrastrando{border-color:var(--tinta);background:#FFFDF4}
+  #dropArea:focus-visible{outline:3px solid var(--placa);outline-offset:3px}
+  #dropArea strong{display:block;font-size:17px;margin-bottom:4px}
+  #dropArea span{color:var(--gris);font-size:13px}
+  .nota-privacidad{
+    margin-top:18px;font-size:12.5px;color:var(--gris);
+  }
+  #msgError{
+    margin-top:16px;color:#B3261E;font-weight:500;display:none;
+  }
+
+  /* ---------- Filtros ---------- */
+  #barraFiltros{
+    display:none;
+    background:var(--blanco);
+    border-bottom:1px solid var(--linea);
+    padding:14px 24px;
+    position:sticky;
+    top:62px;
+    z-index:20;
+  }
+  .fila-filtros{
+    display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;
+    max-width:1280px;margin:0 auto;
+  }
+  .campo{display:flex;flex-direction:column;gap:4px}
+  .campo label{
+    font-size:11px;font-weight:600;letter-spacing:.8px;
+    text-transform:uppercase;color:var(--gris);
+  }
+  .campo input,.campo select{
+    font-family:'Barlow',sans-serif;
+    font-size:14px;
+    padding:8px 10px;
+    border:1px solid #D5D2C9;
+    border-radius:6px;
+    background:#FCFBF8;
+    min-width:150px;
+  }
+  .campo input:focus,.campo select:focus{
+    outline:2px solid var(--tinta);outline-offset:1px;
+  }
+  #buscador{min-width:240px}
+  #chipsTipologia{
+    max-width:1280px;margin:10px auto 0;
+    display:flex;gap:8px;flex-wrap:wrap;
+  }
+  .chip{
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:14px;font-weight:600;letter-spacing:.6px;
+    padding:5px 12px;
+    border-radius:99px;
+    border:1px solid #D5D2C9;
+    background:#FCFBF8;
+    cursor:pointer;
+    color:var(--tinta);
+  }
+  .chip:focus-visible{outline:2px solid var(--tinta);outline-offset:1px}
+  .chip.activo{
+    background:var(--tinta);color:var(--placa);border-color:var(--tinta);
+  }
+  .chip small{color:inherit;opacity:.65;font-size:12px;margin-left:4px}
+
+  /* ---------- Resultados ---------- */
+  main{max-width:1280px;margin:0 auto;padding:20px 24px 60px}
+  #resumen{
+    display:none;
+    font-size:14px;color:var(--gris);margin-bottom:14px;
+  }
+  #resumen b{color:var(--tinta)}
+  #grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(330px,1fr));
+    gap:14px;
+  }
+  .tarjeta{
+    background:var(--blanco);
+    border:1px solid var(--linea);
+    border-radius:10px;
+    padding:14px 16px;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .tarjeta-cabeza{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .badge-placa{
+    background:var(--placa);
+    border:2px solid var(--tinta);
+    border-radius:5px;
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    font-size:21px;
+    letter-spacing:3px;
+    padding:2px 12px;
+    position:relative;
+  }
+  .badge-placa::before,.badge-placa::after{
+    content:"";position:absolute;top:4px;width:4px;height:4px;
+    background:var(--tinta);border-radius:50%;opacity:.5;
+  }
+  .badge-placa::before{left:4px}
+  .badge-placa::after{right:4px}
+  .chip-tipo{
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:13px;font-weight:600;letter-spacing:.8px;
+    background:#EFEDE6;border-radius:4px;padding:3px 8px;
+    color:#3D4046;
+  }
+  .estado{
+    margin-left:auto;
+    font-size:11.5px;font-weight:600;letter-spacing:.5px;
+    display:flex;align-items:center;gap:5px;color:var(--gris);
+  }
+  .estado .punto{width:8px;height:8px;border-radius:50%;background:#C2C6CC}
+  .estado.activo{color:var(--verde)}
+  .estado.activo .punto{background:var(--verde)}
+  .vehiculo{
+    font-size:13.5px;color:#3D4046;
+    border-bottom:1px solid var(--linea);
+    padding-bottom:10px;
+  }
+  .vehiculo b{font-weight:600}
+  .contacto{display:flex;align-items:baseline;gap:8px;font-size:13.5px}
+  .contacto .rol{
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:11.5px;font-weight:700;letter-spacing:1px;
+    color:var(--gris);width:84px;flex-shrink:0;
+    text-transform:uppercase;
+  }
+  .contacto .nombre{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .contacto a{
+    color:var(--tinta);font-weight:600;text-decoration:none;
+    border-bottom:1.5px solid var(--placa);
+    white-space:nowrap;
+  }
+  .contacto a:hover{background:#FFF3CC}
+  .contacto .sin-dato{color:#B5B2A8}
+  .ver-mas{
+    align-self:flex-start;
+    background:none;border:none;cursor:pointer;
+    font-family:'Barlow',sans-serif;
+    font-size:12.5px;font-weight:600;color:var(--gris);
+    padding:2px 0;
+  }
+  .ver-mas:hover{color:var(--tinta)}
+  .detalle{
+    display:none;
+    font-size:12.5px;color:#4A4E55;
+    background:#FAF9F5;border-radius:6px;padding:10px 12px;
+  }
+  .detalle.abierto{display:block}
+  .detalle div{margin-bottom:3px}
+  .detalle b{font-weight:600;color:var(--gris);font-size:11px;letter-spacing:.5px;text-transform:uppercase}
+  #vacio{
+    display:none;text-align:center;padding:60px 20px;color:var(--gris);
+  }
+  #pieAcciones{display:none;text-align:center;margin-top:26px}
+  #btnMas{background:var(--tinta);color:#fff}
+
+  @media (max-width:640px){
+    header{padding:12px 14px;gap:10px}
+    .stats{display:none}
+    #barraFiltros{top:58px;padding:10px 14px}
+    main{padding:14px 14px 50px}
+    #grid{grid-template-columns:1fr}
+    .campo input,.campo select,#buscador{min-width:0;width:100%}
+    .campo{flex:1 1 45%}
+    .campo.full{flex:1 1 100%}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="mini-placa">ABC·123</span>
+    <h1>Archivo de Placas</h1>
+  </div>
+  <div class="stats" id="statsHeader"></div>
+  <button class="btn btn-borde" id="btnCambiarArchivo" style="display:none">Cargar otro archivo</button>
+  <button class="btn btn-amarillo" id="btnExportar" style="display:none">Exportar filtrado (CSV)</button>
+</header>
+
+<!-- Pantalla inicial -->
+<section id="zonaCarga">
+  <div class="placa-grande">ABC·123</div>
+  <h2>Consulta de vehículos, conductores y propietarios</h2>
+  <p>No encontré el archivo <b>data.js</b> con los datos (se genera ejecutando <b>actualizar.bat</b>). Mientras tanto puedes cargar el Excel manualmente:</p>
+  <div id="dropArea" tabindex="0" role="button" aria-label="Seleccionar archivo de Excel">
+    <strong>Arrastra el Excel aquí o haz clic para buscarlo</strong>
+    <span>Formatos: .xlsx · La hoja con los datos debe tener la columna PLACA</span>
+  </div>
+  <input type="file" id="inputArchivo" accept=".xlsx,.xlsm,.xls" hidden>
+  <p id="msgError"></p>
+  <p class="nota-privacidad">🔒 Los datos se procesan únicamente en tu navegador. Nada se sube a internet ni se guarda en el repositorio.</p>
+</section>
+
+<!-- Filtros -->
+<section id="barraFiltros">
+  <div class="fila-filtros">
+    <div class="campo full" style="flex:1">
+      <label for="buscador">Buscar</label>
+      <input id="buscador" type="search" placeholder="Placa, nombre, cédula o celular…">
+    </div>
+    <div class="campo">
+      <label for="fTipologia">Tipología</label>
+      <select id="fTipologia"><option value="">Todas</option></select>
+    </div>
+    <div class="campo">
+      <label for="fCarroceria">Carrocería</label>
+      <select id="fCarroceria"><option value="">Todas</option></select>
+    </div>
+    <div class="campo">
+      <label for="fMarca">Marca</label>
+      <select id="fMarca"><option value="">Todas</option></select>
+    </div>
+    <div class="campo">
+      <label for="fEstado">Estado</label>
+      <select id="fEstado">
+        <option value="">Todos</option>
+        <option value="SI">Activo (SI)</option>
+        <option value="NO">Inactivo (NO)</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label>&nbsp;</label>
+      <button class="btn btn-borde" style="color:var(--tinta);border-color:#D5D2C9" id="btnLimpiar">Limpiar</button>
+    </div>
+  </div>
+  <div id="chipsTipologia" role="group" aria-label="Filtros rápidos de tipología"></div>
+</section>
+
+<main>
+  <p id="resumen"></p>
+  <div id="grid"></div>
+  <div id="vacio">
+    <p style="font-size:38px;margin-bottom:8px">🚛</p>
+    <p><b>Sin resultados con esos filtros.</b><br>Prueba quitando un filtro o revisa la búsqueda.</p>
+  </div>
+  <div id="pieAcciones">
+    <button class="btn" id="btnMas">Mostrar 60 más</button>
+  </div>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  var datos = [];        // registros únicos por placa
+  var filtrados = [];
+  var visibles = 0;
+  var POR_PAGINA = 60;
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- utilidades ---------- */
+  function limpio(v){
+    if(v === null || v === undefined) return "";
+    var s = String(v).trim();
+    if(s === "-" || s === "- -" || s === "N/D" || s === "0" || s === "0000000") return "";
+    return s;
+  }
+  function normTipoBase(t){
+    if(!t) return "SIN TIPOLOGÍA";
+    var base = t.split("_")[0].trim();
+    base = base.replace(/\s*REFRIGERADA$/,"").trim();
+    base = base.replace(/^DOBLE[\s-]?TROQUE$/,"DOBLETROQUE");
+    if(base === "PATINTA") base = "PATINETA";
+    if(base === "" || base === "-") base = "SIN TIPOLOGÍA";
+    return base;
+  }
+  function aFecha(v){
+    if(v instanceof Date) return v;
+    if(typeof v === "number"){ // serial de Excel
+      return new Date(Math.round((v - 25569) * 86400 * 1000));
+    }
+    if(typeof v === "string"){
+      var m = v.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if(m) return new Date(+m[3], +m[2]-1, +m[1]);
+      var d = new Date(v);
+      if(!isNaN(d)) return d;
+    }
+    return new Date(0);
+  }
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function telLink(cel){
+    var c = limpio(cel).replace(/[^\d+]/g,"");
+    if(c.length < 7) return '<span class="sin-dato">sin celular</span>';
+    return '<a href="tel:'+esc(c)+'">'+esc(limpio(cel))+'</a>';
+  }
+
+  /* ---------- carga del archivo ---------- */
+  var drop = $("dropArea"), input = $("inputArchivo");
+  drop.addEventListener("click", function(){ input.click(); });
+  drop.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); input.click(); }});
+  drop.addEventListener("dragover", function(e){ e.preventDefault(); drop.classList.add("arrastrando"); });
+  drop.addEventListener("dragleave", function(){ drop.classList.remove("arrastrando"); });
+  drop.addEventListener("drop", function(e){
+    e.preventDefault(); drop.classList.remove("arrastrando");
+    if(e.dataTransfer.files.length) leerArchivo(e.dataTransfer.files[0]);
+  });
+  input.addEventListener("change", function(){
+    if(input.files.length) leerArchivo(input.files[0]);
+  });
+  $("btnCambiarArchivo").addEventListener("click", function(){ input.click(); });
+
+  function error(msg){
+    var el = $("msgError");
+    el.textContent = msg; el.style.display = "block";
+  }
+
+  function leerArchivo(file){
+    $("msgError").style.display = "none";
+    var lector = new FileReader();
+    lector.onload = function(e){
+      try{
+        var wb = XLSX.read(new Uint8Array(e.target.result), {type:"array", cellDates:true});
+        // buscar la hoja que tenga columna PLACA y TIPOLOGIA
+        var hoja = null;
+        for(var i=0;i<wb.SheetNames.length;i++){
+          var ws = wb.Sheets[wb.SheetNames[i]];
+          var filas = XLSX.utils.sheet_to_json(ws, {header:1, range:0, blankrows:false});
+          if(filas.length && filas[0].indexOf("PLACA") !== -1 && filas[0].indexOf("TIPOLOGIA") !== -1){
+            hoja = wb.SheetNames[i]; break;
+          }
+        }
+        if(!hoja){ error("No encontré una hoja con las columnas PLACA y TIPOLOGIA. Revisa el archivo."); return; }
+        var crudos = XLSX.utils.sheet_to_json(wb.Sheets[hoja], {defval:""});
+        procesar(crudos, hoja);
+      }catch(err){
+        error("No pude leer el archivo: " + err.message);
+      }
+    };
+    lector.readAsArrayBuffer(file);
+  }
+
+  function procesar(crudos, nombreHoja){
+    // mapear y deduplicar por placa quedándonos con la fecha de creación más reciente
+    var porPlaca = {};
+    var total = 0;
+    crudos.forEach(function(r){
+      var placa = limpio(r["PLACA"]);
+      if(!placa) return;
+      total++;
+      var fecha = aFecha(r["FECHA DE CREACIÓN"]);
+      if(porPlaca[placa] && porPlaca[placa]._fecha >= fecha) return;
+      porPlaca[placa] = {
+        _fecha: fecha,
+        placa: placa,
+        estado: limpio(r["ESTADO"]).toUpperCase(),
+        tipologia: limpio(r["TIPOLOGIA"]) || "-",
+        tipoBase: normTipoBase(limpio(r["TIPOLOGIA"])),
+        carroceria: limpio(r["CARROCERÍA"]),
+        marca: limpio(r["MARCA"]),
+        modelo: limpio(r["MODELO"]).replace(/\.0$/,""),
+        color: limpio(r["COLOR"]),
+        linea: limpio(r["LÍNEA"]),
+        remolque: limpio(r["REMOLQUE"]),
+        cond: {
+          nombre: limpio(r["NOMBRE Y APELLIDO"]),
+          cedula: limpio(r["CEDULA"]),
+          celular: limpio(r["CELULAR"]),
+          ciudad: limpio(r["CIUDAD"]),
+          direccion: limpio(r["DIRECCIÓN"]),
+          licencia: limpio(r["LICENCIA"]),
+          clase: limpio(r["CLASE"]),
+          vence: limpio(r["FECHA DE VENCIMIENTO"])
+        },
+        tene: {
+          nombre: limpio(r["NOMBRE_2"]),
+          cedula: limpio(r["CEDULA_1"]),
+          celular: limpio(r["CELULAR_3"]),
+          ciudad: limpio(r["CIUDAD_5"]),
+          direccion: limpio(r["DIRECCIÓN_4"])
+        },
+        prop: {
+          nombre: limpio(r["NOMBRE_7"]),
+          cedula: limpio(r["CEDULA_6"]),
+          celular: limpio(r["CELULAR_8"]),
+          ciudad: limpio(r["CIUDAD_9"]),
+          direccion: limpio(r["DIRECCIÓN_10"])
+        }
+      };
+    });
+
+    datos = Object.keys(porPlaca).map(function(k){ return porPlaca[k]; });
+    datos.sort(function(a,b){ return a.placa < b.placa ? -1 : 1; });
+    iniciar(total, nombreHoja, null);
+  }
+
+  /* arranque de la interfaz una vez hay datos (de data.js o de un Excel cargado) */
+  function iniciar(total, nombreHoja, actualizado){
+    poblarSelect("fTipologia", contar(datos, "tipoBase"));
+    poblarSelect("fCarroceria", contar(datos, "carroceria"));
+    poblarSelect("fMarca", contar(datos, "marca"));
+    pintarChips(contar(datos, "tipoBase"));
+
+    $("statsHeader").innerHTML =
+      "<div><b>"+datos.length.toLocaleString("es-CO")+"</b>placas únicas</div>"+
+      "<div><b>"+total.toLocaleString("es-CO")+"</b>registros leídos</div>"+
+      (actualizado
+        ? "<div><b>"+esc(actualizado)+"</b>última actualización</div>"
+        : "<div><b>"+esc(nombreHoja)+"</b>hoja de datos</div>");
+
+    $("zonaCarga").style.display = "none";
+    $("barraFiltros").style.display = "block";
+    $("resumen").style.display = "block";
+    $("btnCambiarArchivo").style.display = "inline-block";
+    $("btnExportar").style.display = "inline-block";
+    aplicarFiltros();
+  }
+
+  function contar(arr, campo){
+    var c = {};
+    arr.forEach(function(d){
+      var v = d[campo];
+      if(!v) return;
+      c[v] = (c[v]||0)+1;
+    });
+    return Object.keys(c).map(function(k){ return {valor:k, n:c[k]}; })
+      .sort(function(a,b){ return b.n - a.n; });
+  }
+  function poblarSelect(id, lista){
+    var sel = $(id);
+    sel.length = 1;
+    lista.forEach(function(it){
+      var o = document.createElement("option");
+      o.value = it.valor;
+      o.textContent = it.valor + " (" + it.n.toLocaleString("es-CO") + ")";
+      sel.appendChild(o);
+    });
+  }
+  function pintarChips(lista){
+    var cont = $("chipsTipologia");
+    cont.innerHTML = "";
+    lista.slice(0,8).forEach(function(it){
+      var b = document.createElement("button");
+      b.className = "chip";
+      b.innerHTML = esc(it.valor) + "<small>" + it.n.toLocaleString("es-CO") + "</small>";
+      b.dataset.valor = it.valor;
+      b.addEventListener("click", function(){
+        var sel = $("fTipologia");
+        sel.value = (sel.value === it.valor) ? "" : it.valor;
+        aplicarFiltros();
+      });
+      cont.appendChild(b);
+    });
+  }
+
+  /* ---------- filtros ---------- */
+  ["buscador","fTipologia","fCarroceria","fMarca","fEstado"].forEach(function(id){
+    $(id).addEventListener("input", aplicarFiltros);
+  });
+  $("btnLimpiar").addEventListener("click", function(){
+    $("buscador").value = "";
+    $("fTipologia").value = ""; $("fCarroceria").value = "";
+    $("fMarca").value = ""; $("fEstado").value = "";
+    aplicarFiltros();
+  });
+
+  function aplicarFiltros(){
+    var q = $("buscador").value.trim().toUpperCase();
+    var ft = $("fTipologia").value, fc = $("fCarroceria").value,
+        fm = $("fMarca").value, fe = $("fEstado").value;
+
+    filtrados = datos.filter(function(d){
+      if(ft && d.tipoBase !== ft) return false;
+      if(fc && d.carroceria !== fc) return false;
+      if(fm && d.marca !== fm) return false;
+      if(fe && d.estado !== fe) return false;
+      if(q){
+        var pajar = [d.placa, d.cond.nombre, d.cond.cedula, d.cond.celular,
+                     d.tene.nombre, d.tene.cedula, d.tene.celular,
+                     d.prop.nombre, d.prop.cedula, d.prop.celular].join(" ").toUpperCase();
+        if(pajar.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+
+    document.querySelectorAll(".chip").forEach(function(ch){
+      ch.classList.toggle("activo", ch.dataset.valor === ft);
+    });
+
+    visibles = 0;
+    $("grid").innerHTML = "";
+    mostrarMas();
+  }
+
+  $("btnMas").addEventListener("click", mostrarMas);
+
+  function mostrarMas(){
+    var frag = document.createDocumentFragment();
+    var fin = Math.min(visibles + POR_PAGINA, filtrados.length);
+    for(var i = visibles; i < fin; i++) frag.appendChild(tarjeta(filtrados[i]));
+    $("grid").appendChild(frag);
+    visibles = fin;
+
+    $("resumen").innerHTML = "Mostrando <b>" + visibles.toLocaleString("es-CO") +
+      "</b> de <b>" + filtrados.length.toLocaleString("es-CO") + "</b> placas";
+    $("vacio").style.display = filtrados.length ? "none" : "block";
+    $("pieAcciones").style.display = (visibles < filtrados.length) ? "block" : "none";
+  }
+
+  function filaContacto(rol, p){
+    return '<div class="contacto">' +
+      '<span class="rol">'+rol+'</span>' +
+      '<span class="nombre">'+(p.nombre ? esc(p.nombre) : '<span class="sin-dato">sin nombre</span>')+'</span>' +
+      telLink(p.celular) +
+    '</div>';
+  }
+
+  function tarjeta(d){
+    var el = document.createElement("article");
+    el.className = "tarjeta";
+    var veh = [d.marca, d.modelo, d.color, d.linea].filter(Boolean).join(" · ");
+    var extra = [];
+    if(d.carroceria) extra.push("Carrocería: <b>"+esc(d.carroceria)+"</b>");
+    if(d.remolque) extra.push("Remolque: <b>"+esc(d.remolque)+"</b>");
+
+    el.innerHTML =
+      '<div class="tarjeta-cabeza">' +
+        '<span class="badge-placa">'+esc(d.placa)+'</span>' +
+        '<span class="chip-tipo">'+esc(d.tipologia)+'</span>' +
+        '<span class="estado'+(d.estado==="SI"?" activo":"")+'"><span class="punto"></span>'+(d.estado==="SI"?"ACTIVO":"INACTIVO")+'</span>' +
+      '</div>' +
+      '<div class="vehiculo">'+(veh ? esc(veh) : '<span class="sin-dato">Sin datos del vehículo</span>') +
+        (extra.length ? '<br>'+extra.join(" &nbsp;·&nbsp; ") : "") +
+      '</div>' +
+      filaContacto("Conductor", d.cond) +
+      filaContacto("Tenedor", d.tene) +
+      filaContacto("Propietario", d.prop) +
+      '<button class="ver-mas" type="button">Ver detalle ▾</button>' +
+      '<div class="detalle">' +
+        det("Conductor", d.cond, true) + det("Tenedor", d.tene) + det("Propietario", d.prop) +
+      '</div>';
+
+    var btn = el.querySelector(".ver-mas"), det_ = el.querySelector(".detalle");
+    btn.addEventListener("click", function(){
+      var abierto = det_.classList.toggle("abierto");
+      btn.textContent = abierto ? "Ocultar detalle ▴" : "Ver detalle ▾";
+    });
+    return el;
+  }
+
+  function det(rol, p, conLicencia){
+    var partes = [];
+    if(p.cedula) partes.push("CC " + esc(p.cedula));
+    if(p.ciudad) partes.push(esc(p.ciudad));
+    if(p.direccion) partes.push(esc(p.direccion));
+    if(conLicencia && p.licencia) partes.push("Licencia " + esc(p.licencia) + (p.clase ? " ("+esc(p.clase)+")" : "") + (p.vence ? " vence " + esc(p.vence) : ""));
+    if(!partes.length) return "";
+    return "<div><b>"+rol+":</b> " + partes.join(" · ") + "</div>";
+  }
+
+  /* ---------- exportar CSV ---------- */
+  $("btnExportar").addEventListener("click", function(){
+    if(!filtrados.length) return;
+    var cab = ["PLACA","ESTADO","TIPOLOGIA","CARROCERIA","MARCA","MODELO","COLOR","LINEA","REMOLQUE",
+      "CONDUCTOR","CEDULA CONDUCTOR","CELULAR CONDUCTOR","CIUDAD CONDUCTOR",
+      "TENEDOR","CEDULA TENEDOR","CELULAR TENEDOR",
+      "PROPIETARIO","CEDULA PROPIETARIO","CELULAR PROPIETARIO"];
+    var filas = filtrados.map(function(d){
+      return [d.placa,d.estado,d.tipologia,d.carroceria,d.marca,d.modelo,d.color,d.linea,d.remolque,
+        d.cond.nombre,d.cond.cedula,d.cond.celular,d.cond.ciudad,
+        d.tene.nombre,d.tene.cedula,d.tene.celular,
+        d.prop.nombre,d.prop.cedula,d.prop.celular]
+        .map(function(v){ return '"' + String(v||"").replace(/"/g,'""') + '"'; }).join(";");
+    });
+    var csv = "\uFEFF" + cab.join(";") + "\n" + filas.join("\n");
+    var blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "placas_filtradas.csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  /* ---------- arranque automático con data.js ---------- */
+  if (window.DATOS_PLACAS && window.DATOS_PLACAS.placas && window.DATOS_PLACAS.placas.length){
+    var p = window.DATOS_PLACAS;
+    datos = p.placas;
+    iniciar(p.totalRegistros || datos.length, p.hoja || "", p.actualizado || null);
+  }
+})();
+</script>
+</body>
+</html>

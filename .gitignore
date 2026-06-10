@@ -1,0 +1,17 @@
+# ============================================
+# El Excel original NUNCA se sube (queda en OneDrive).
+# OJO: data.js SÍ se sube y contiene datos personales,
+# por eso este repositorio DEBE SER PRIVADO.
+# ============================================
+*.xlsx
+*.xlsm
+*.xls
+*.csv
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Dependencias (si algún día se agregan)
+node_modules/
