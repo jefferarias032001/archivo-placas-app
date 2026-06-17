@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
 <script src="data.js"></script>
 <script src="data_viajes.js"></script>
+<script src="data_pnc.js"></script>
 <style>
   :root{
     --azul:#15418C; --azul-claro:#2E62C4;
@@ -52,7 +53,7 @@
   .btn-naranja:hover{background:#FFAA33}
 
   /* KPIs */
-  #kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;max-width:1320px;margin:18px auto 0;padding:0 28px}
+  #kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;max-width:1800px;margin:18px auto 0;padding:0 28px}
   .kpi{background:var(--blanco);border:1px solid var(--linea);border-radius:12px;padding:13px 16px;display:flex;align-items:center;gap:12px;box-shadow:var(--sombra);cursor:pointer;border-bottom:3px solid transparent;transition:transform .12s ease;text-align:left;font-family:'Manrope',sans-serif}
   .kpi:hover{transform:translateY(-2px)}
   .kpi:focus-visible{outline:3px solid var(--naranja);outline-offset:2px}
@@ -70,7 +71,7 @@
 
   /* Filtros */
   #barraFiltros{background:var(--blanco);border-bottom:1px solid var(--linea);padding:14px 28px;position:sticky;top:71px;z-index:20;box-shadow:0 4px 12px rgba(11,31,71,.04);margin-top:18px}
-  .fila-filtros{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;max-width:1320px;margin:0 auto}
+  .fila-filtros{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;max-width:1800px;margin:0 auto}
   .campo{display:flex;flex-direction:column;gap:5px;position:relative}
   .campo label{font-size:10.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--gris);display:flex;align-items:center;gap:5px}
   .campo label .ico{width:12px;height:12px}
@@ -95,6 +96,8 @@
     font-size:13.5px;padding:4px;flex:1;min-width:90px;color:var(--tinta);
   }
   .multi.placas .tag{background:var(--marino)}
+  .select-filtro{font-family:'Manrope',sans-serif;font-size:13.5px;font-weight:500;padding:9px 11px;border:1.5px solid #D8DFEC;border-radius:8px;background:#FAFBFE;color:var(--tinta);height:40px}
+  .select-filtro:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(21,65,140,.12)}
   /* sugerencias */
   .sugerencias{
     position:absolute;top:100%;left:0;right:0;margin-top:4px;background:#fff;
@@ -109,15 +112,15 @@
   .sugerencias .vacio:hover{background:none}
 
   /* Listado */
-  main{max-width:1320px;margin:0 auto;padding:18px 28px 60px}
+  main{max-width:1800px;margin:0 auto;padding:18px 28px 60px}
   #resumen{font-size:13.5px;color:var(--gris);margin-bottom:12px;font-weight:600}
   #resumen b{color:var(--tinta)}
   .fila{background:var(--blanco);border:1px solid var(--linea);border-radius:12px;margin-bottom:8px;box-shadow:var(--sombra);overflow:hidden;animation:aparecer .2s ease both}
   @keyframes aparecer{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
   .fila-principal{
     display:grid;
-    grid-template-columns:34px 130px 100px 150px 92px 92px 78px 1fr 36px;
-    gap:12px;align-items:center;padding:11px 14px;
+    grid-template-columns:30px 116px 96px 76px 64px 60px 60px 64px 70px 1.1fr 1.1fr 1.1fr 32px;
+    gap:9px;align-items:center;padding:12px 16px;
   }
   .rank{font-weight:800;color:#A8B3C9;font-size:13px;text-align:center}
   .badge-placa{background:linear-gradient(180deg,#FFB23E,var(--naranja));border:2px solid var(--marino);border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:2.5px;color:var(--marino);padding:1px 10px;display:inline-block;text-align:center}
@@ -132,19 +135,14 @@
   .celda b{font-size:15px;font-weight:800;display:block}
   .celda span{font-size:10.5px;color:var(--gris);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
 
-  /* bloque de 3 contactos */
-  .contactos{display:flex;flex-direction:column;gap:4px;min-width:0}
-  .contacto-linea{display:flex;align-items:center;gap:7px;min-width:0}
-  .contacto-linea .rolico{width:22px;height:22px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-  .contacto-linea .rolico svg{width:12px;height:12px}
-  .rol-cond{background:#E5EDFB;color:var(--azul)}
-  .rol-tene{background:var(--naranja-suave);color:var(--ambar)}
-  .rol-prop{background:#EBE9FA;color:#5B4FBE}
-  .contacto-linea .nom{font-size:11.5px;font-weight:600;color:var(--tinta);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
-  .contacto-linea a{color:var(--azul);font-weight:800;text-decoration:none;font-size:12px;display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:6px;background:#F1F5FC;white-space:nowrap}
-  .contacto-linea a:hover{background:#E0EAFA}
-  .contacto-linea a .ico{width:11px;height:11px}
+  /* columna de contacto individual */
+  .col-contacto{min-width:0;line-height:1.25}
+  .col-contacto .nom{font-size:11.5px;font-weight:700;color:var(--tinta);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;margin-bottom:3px}
+  .col-contacto a{color:var(--azul);font-weight:800;text-decoration:none;font-size:12px;display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;background:#F1F5FC;white-space:nowrap}
+  .col-contacto a:hover{background:#E0EAFA}
+  .col-contacto a .ico{width:12px;height:12px}
   .sin-dato{color:#B8C0D0;font-weight:500;font-size:11px}
+  .sin-ficha{grid-column:7 / 10;color:#B8C0D0;font-weight:500;font-size:12px}
 
   .btn-expandir{background:#F1F4F9;border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--gris);transition:background .12s ease}
   .btn-expandir:hover{background:#E2E8F2;color:var(--azul)}
@@ -153,6 +151,19 @@
   .historial{display:none;border-top:1px solid var(--linea);background:#F9FAFD;padding:12px 16px}
   .fila.abierta .historial{display:block}
   .historial h4{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--gris);margin-bottom:8px}
+  /* bloque PNC en el detalle */
+  .pnc-bloque{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--linea)}
+  .pnc-bloque h4{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--rojo);margin-bottom:10px}
+  .pnc-resumen{display:flex;flex-wrap:wrap;gap:18px;margin-bottom:12px}
+  .pnc-dato{line-height:1.2}
+  .pnc-dato b{display:block;font-size:17px;font-weight:800}
+  .pnc-dato span{font-size:10px;color:var(--gris);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+  .pnc-tipos{max-width:480px}
+  .pnc-tipos-tit{font-size:11px;font-weight:800;color:var(--gris);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+  .pnc-tipo{position:relative;display:flex;align-items:center;gap:10px;padding:5px 10px;border-radius:6px;font-size:12.5px;margin-bottom:3px;background:#fff;overflow:hidden}
+  .pnc-tipo .barra{position:absolute;left:0;top:0;bottom:0;background:#FDE7E2;z-index:0}
+  .pnc-tipo .et{position:relative;z-index:1;font-weight:700;flex:1}
+  .pnc-tipo .cn{position:relative;z-index:1;font-weight:800;color:var(--rojo)}
   .ruta{display:grid;grid-template-columns:1fr minmax(160px,260px) 70px 95px;gap:10px;align-items:center;padding:6px 10px;border-radius:8px;font-size:13px}
   .ruta:nth-child(even){background:#fff}
   .ruta.resaltada{background:var(--naranja-suave);box-shadow:inset 3px 0 0 var(--naranja)}
@@ -169,13 +180,51 @@
   #errorDatos{max-width:680px;margin:10vh auto;text-align:center;padding:0 20px;display:none}
   #errorDatos h2{font-size:24px;font-weight:800;margin-bottom:10px}
   #errorDatos p{color:var(--gris)}
-  .encabezado-tabla{display:grid;grid-template-columns:34px 130px 100px 150px 92px 92px 78px 1fr 36px;gap:12px;padding:0 14px 6px;font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#8B96AC}
+  .encabezado-tabla{display:grid;grid-template-columns:30px 116px 96px 76px 64px 60px 60px 64px 70px 1.1fr 1.1fr 1.1fr 32px;gap:9px;padding:0 16px 6px;font-size:9.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#8B96AC}
+  .encabezado-tabla .h-cond{color:var(--azul)}
+  .encabezado-tabla .h-tene{color:var(--ambar)}
+  .encabezado-tabla .h-prop{color:#5B4FBE}
+  .encabezado-tabla .h-abi{color:var(--ambar)}
+  .encabezado-tabla .h-cer{color:var(--verde)}
+  .encabezado-tabla .h-atr{color:var(--rojo)}
+  .encabezado-tabla .h-pct{color:var(--azul)}
+  /* columna PNC */
+  .pnc-cel{line-height:1.2}
+  .pnc-badge{font-size:10px;font-weight:800;letter-spacing:.4px;border-radius:99px;padding:3px 9px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+  .pnc-badge .punto{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .r-alto{background:var(--rojo-suave);color:var(--rojo)}
+  .r-medio{background:var(--ambar-suave);color:var(--ambar)}
+  .r-bajo{background:var(--verde-suave);color:var(--verde)}
+  .r-sin{background:#EEF1F7;color:#9AA5B8}
+  .pnc-cel .sub{font-size:10px;color:var(--gris);font-weight:700;margin-top:2px;display:block}
+  .pnc-cel .sub b{color:var(--rojo)}
+  /* celdas PNC numéricas compactas (3 columnas) */
+  .pnc-num{text-align:center;line-height:1.05}
+  .pnc-num b{display:block;font-size:16px;font-weight:800}
+  .pnc-num span{font-size:8.5px;color:var(--gris);font-weight:700;text-transform:uppercase;letter-spacing:.2px}
+  .pnc-num.abi b{color:var(--ambar)}
+  .pnc-num.cer b{color:var(--verde)}
+  .pnc-num.atr b{color:var(--rojo)}
+  .pnc-num.cero b{color:#C4CCD9}
+  .pnc-num .riesgo-pt{display:inline-block;width:7px;height:7px;border-radius:50%;margin-top:1px}
+  .rp-alto{background:var(--rojo)} .rp-medio{background:var(--ambar)} .rp-bajo{background:var(--verde)} .rp-sin{background:#C4CCD9}
+  /* % de PNC sobre viajes */
+  .pct-cel{text-align:center;line-height:1.05}
+  .pct-cel b{display:block;font-size:16px;font-weight:800}
+  .pct-cel span{font-size:8.5px;color:var(--gris);font-weight:700;text-transform:uppercase;letter-spacing:.2px}
+  .pct-cel.alto b{color:var(--rojo)} .pct-cel.medio b{color:var(--ambar)} .pct-cel.bajo b{color:var(--verde)} .pct-cel.cero b{color:#C4CCD9}
 
-  @media (max-width:1050px){
+  @media (max-width:1100px){
     .encabezado-tabla{display:none}
-    .fila-principal{grid-template-columns:1fr 1fr;padding:13px 14px;gap:10px}
+    .fila-principal{grid-template-columns:1fr 1fr 1fr;padding:13px 14px;gap:10px}
     .rank{display:none}
-    .contactos{grid-column:1 / -1;border-top:1px dashed var(--linea);padding-top:8px}
+    .pnc-num{text-align:left;background:#F7F9FD;border-radius:8px;padding:6px 8px}
+    .pnc-num b{font-size:15px}
+    .pct-cel{text-align:left;background:#F7F9FD;border-radius:8px;padding:6px 8px}
+    .pct-cel b{font-size:15px}
+    .col-contacto{border-top:1px dashed var(--linea);padding-top:7px}
+    .col-contacto::before{content:attr(data-rol);display:block;font-size:9px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#A8B3C9;margin-bottom:3px}
+    .sin-ficha{grid-column:1 / -1}
     .historial .ruta{grid-template-columns:1fr 70px;row-gap:2px}
     .ruta .cli{grid-column:1 / -1}
     .ruta .fe{text-align:left}
@@ -189,6 +238,7 @@
     main{padding:14px 14px 50px}
     .campo,.multi{min-width:0;width:100%}
     .campo{flex:1 1 100%}
+    .fila-principal{grid-template-columns:1fr 1fr}
   }
 </style>
 </head>
@@ -206,6 +256,7 @@
     <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
     <symbol id="i-flecha" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
     <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-mapa" viewBox="0 0 24 24"><path d="m9 3-6 3v15l6-3 6 3 6-3V3l-6 3-6-3zM9 3v15M15 6v15"/></symbol>
     <symbol id="i-cliente" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 5-5.5"/></symbol>
     <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
@@ -258,33 +309,82 @@
         <div class="sugerencias" id="sgPlacas"></div>
       </div>
     </div>
-    <div class="campo" style="flex:1;min-width:170px">
-      <label><svg class="ico"><use href="#i-pin"/></svg> Origen <span class="cuenta" id="cOrigen" style="display:none"></span></label>
+    <div class="campo" style="flex:1;min-width:160px">
+      <label><svg class="ico"><use href="#i-mapa"/></svg> Región origen <span class="cuenta" id="cRorig" style="display:none"></span></label>
+      <div class="multi" data-campo="rorig">
+        <input type="text" id="inRorig" placeholder="Todas">
+        <div class="sugerencias" id="sgRorig"></div>
+      </div>
+    </div>
+    <div class="campo" style="flex:1;min-width:160px">
+      <label><svg class="ico"><use href="#i-mapa"/></svg> Región destino <span class="cuenta" id="cRdest" style="display:none"></span></label>
+      <div class="multi" data-campo="rdest">
+        <input type="text" id="inRdest" placeholder="Todas">
+        <div class="sugerencias" id="sgRdest"></div>
+      </div>
+    </div>
+    <div class="campo" style="flex:1;min-width:160px">
+      <label><svg class="ico"><use href="#i-pin"/></svg> Depto origen <span class="cuenta" id="cDorig" style="display:none"></span></label>
+      <div class="multi" data-campo="dorig">
+        <input type="text" id="inDorig" placeholder="Todos">
+        <div class="sugerencias" id="sgDorig"></div>
+      </div>
+    </div>
+    <div class="campo" style="flex:1;min-width:160px">
+      <label><svg class="ico"><use href="#i-pin"/></svg> Depto destino <span class="cuenta" id="cDdest" style="display:none"></span></label>
+      <div class="multi" data-campo="ddest">
+        <input type="text" id="inDdest" placeholder="Todos">
+        <div class="sugerencias" id="sgDdest"></div>
+      </div>
+    </div>
+  </div>
+  <div class="fila-filtros" style="margin-top:10px">
+    <div class="campo" style="flex:1;min-width:160px">
+      <label><svg class="ico"><use href="#i-pin"/></svg> Ciudad origen <span class="cuenta" id="cOrigen" style="display:none"></span></label>
       <div class="multi" data-campo="origen">
-        <input type="text" id="inOrigen" placeholder="Todos">
+        <input type="text" id="inOrigen" placeholder="Todas">
         <div class="sugerencias" id="sgOrigen"></div>
       </div>
     </div>
-    <div class="campo" style="flex:1;min-width:170px">
-      <label><svg class="ico"><use href="#i-pin"/></svg> Destino <span class="cuenta" id="cDestino" style="display:none"></span></label>
+    <div class="campo" style="flex:1;min-width:160px">
+      <label><svg class="ico"><use href="#i-pin"/></svg> Ciudad destino <span class="cuenta" id="cDestino" style="display:none"></span></label>
       <div class="multi" data-campo="destino">
-        <input type="text" id="inDestino" placeholder="Todos">
+        <input type="text" id="inDestino" placeholder="Todas">
         <div class="sugerencias" id="sgDestino"></div>
       </div>
     </div>
-    <div class="campo" style="flex:1.2;min-width:190px">
+    <div class="campo" style="flex:1.2;min-width:180px">
       <label><svg class="ico"><use href="#i-cliente"/></svg> Cliente <span class="cuenta" id="cCliente" style="display:none"></span></label>
       <div class="multi" data-campo="cliente">
         <input type="text" id="inCliente" placeholder="Todos">
         <div class="sugerencias" id="sgCliente"></div>
       </div>
     </div>
-    <div class="campo" style="flex:1;min-width:160px">
+    <div class="campo" style="flex:1;min-width:150px">
       <label><svg class="ico"><use href="#i-camion"/></svg> Tipología <span class="cuenta" id="cTipologia" style="display:none"></span></label>
       <div class="multi" data-campo="tipologia">
         <input type="text" id="inTipologia" placeholder="Todas">
         <div class="sugerencias" id="sgTipologia"></div>
       </div>
+    </div>
+    <div class="campo" style="min-width:140px">
+      <label><svg class="ico"><use href="#i-check"/></svg> Estado flota</label>
+      <select id="fEstadoFlota" class="select-filtro">
+        <option value="">Todos</option>
+        <option value="FIDELIZADA">Fidelizada</option>
+        <option value="EVENTUAL">Eventual</option>
+        <option value="POR RECUPERAR">Por recuperar</option>
+      </select>
+    </div>
+    <div class="campo" style="min-width:150px">
+      <label><svg class="ico"><use href="#i-alerta"/></svg> Riesgo PNC</label>
+      <select id="fRiesgo" class="select-filtro">
+        <option value="">Todos</option>
+        <option value="ALTO">Solo riesgo ALTO</option>
+        <option value="MEDIO">Riesgo MEDIO o ALTO</option>
+        <option value="ABIERTOS">Con PNC abiertos</option>
+        <option value="SINPNC">Sin PNC</option>
+      </select>
     </div>
     <div class="campo">
       <label>&nbsp;</label>
@@ -296,8 +396,11 @@
 <main>
   <p id="resumen"></p>
   <div class="encabezado-tabla">
-    <span>#</span><span>Placa</span><span>Estado</span><span>Tipología</span>
-    <span>Viajes</span><span>Última carga</span><span>Rotación</span><span>Contactos</span><span></span>
+    <span>#</span><span>Placa</span><span>Estado</span>
+    <span>Viajes</span><span>Rot.</span>
+    <span class="h-abi">Abiertos</span><span class="h-cer">Cerrados</span><span class="h-atr">Atrib.</span>
+    <span class="h-pct">% PNC/viajes</span>
+    <span class="h-cond">Conductor</span><span class="h-tene">Tenedor</span><span class="h-prop">Propietario</span><span></span>
   </div>
   <div id="lista"></div>
   <div id="vacio"><p style="font-size:38px;margin-bottom:8px">🚛</p><p><b>Sin placas con esos filtros.</b><br>Prueba ampliando la búsqueda.</p></div>
@@ -325,12 +428,18 @@
   var estadoActivo = "";
 
   /* selecciones múltiples por campo */
-  var sel = { placas:[], origen:[], destino:[], cliente:[], tipologia:[] };
+  var sel = { placas:[], origen:[], destino:[], cliente:[], tipologia:[], dorig:[], ddest:[], rorig:[], rdest:[] };
 
   /* contactos del archivo de placas */
   var contactos = {};
   if(window.DATOS_PLACAS && window.DATOS_PLACAS.placas){
     window.DATOS_PLACAS.placas.forEach(function(p){ contactos[p.placa] = p; });
+  }
+
+  /* PNC (novedades) por placa */
+  var pncPorPlaca = {};
+  if(window.DATOS_PNC && window.DATOS_PNC.placas){
+    window.DATOS_PNC.placas.forEach(function(p){ pncPorPlaca[p.placa] = p; });
   }
 
   function esc(s){
@@ -342,7 +451,7 @@
   function haceDias(d){ if(d>=9999) return "sin fecha"; if(d===0) return "hoy"; if(d===1) return "ayer"; return "hace "+d+" días"; }
 
   /* catálogos para sugerencias */
-  var cat = { placas:{}, origen:{}, destino:{}, cliente:{}, tipologia:{} };
+  var cat = { placas:{}, origen:{}, destino:{}, cliente:{}, tipologia:{}, dorig:{}, ddest:{}, rorig:{}, rdest:{} };
   placas.forEach(function(p){
     cat.placas[p.placa] = (cat.placas[p.placa]||0) + p.viajes;
     if(p.tip) cat.tipologia[p.tip] = (cat.tipologia[p.tip]||0)+1;
@@ -350,6 +459,10 @@
       if(r.o) cat.origen[r.o] = (cat.origen[r.o]||0)+r.n;
       if(r.d) cat.destino[r.d] = (cat.destino[r.d]||0)+r.n;
       if(r.c) cat.cliente[r.c] = (cat.cliente[r.c]||0)+r.n;
+      if(r.od) cat.dorig[r.od] = (cat.dorig[r.od]||0)+r.n;
+      if(r.dd) cat.ddest[r.dd] = (cat.ddest[r.dd]||0)+r.n;
+      if(r.orr) cat.rorig[r.orr] = (cat.rorig[r.orr]||0)+r.n;
+      if(r.dr) cat.rdest[r.dr] = (cat.rdest[r.dr]||0)+r.n;
     });
   });
   function listaCat(campo){
@@ -357,10 +470,10 @@
   }
 
   /* ---------- componente multiselección ---------- */
-  var campos = ["placas","origen","destino","cliente","tipologia"];
-  var idsInput = {placas:"inPlacas",origen:"inOrigen",destino:"inDestino",cliente:"inCliente",tipologia:"inTipologia"};
-  var idsSug   = {placas:"sgPlacas",origen:"sgOrigen",destino:"sgDestino",cliente:"sgCliente",tipologia:"sgTipologia"};
-  var idsCuenta= {placas:"cPlacas",origen:"cOrigen",destino:"cDestino",cliente:"cCliente",tipologia:"cTipologia"};
+  var campos = ["placas","origen","destino","cliente","tipologia","dorig","ddest","rorig","rdest"];
+  var idsInput = {placas:"inPlacas",origen:"inOrigen",destino:"inDestino",cliente:"inCliente",tipologia:"inTipologia",dorig:"inDorig",ddest:"inDdest",rorig:"inRorig",rdest:"inRdest"};
+  var idsSug   = {placas:"sgPlacas",origen:"sgOrigen",destino:"sgDestino",cliente:"sgCliente",tipologia:"sgTipologia",dorig:"sgDorig",ddest:"sgDdest",rorig:"sgRorig",rdest:"sgRdest"};
+  var idsCuenta= {placas:"cPlacas",origen:"cOrigen",destino:"cDestino",cliente:"cCliente",tipologia:"cTipologia",dorig:"cDorig",ddest:"cDdest",rorig:"cRorig",rdest:"cRdest"};
   var indiceSug = {};
 
   function agregar(campo, valor){
@@ -388,7 +501,8 @@
       tag.querySelector("b").addEventListener("click", function(e){ e.stopPropagation(); quitar(campo, v); });
       caja.insertBefore(tag, input);
     });
-    input.placeholder = sel[campo].length ? "" : (campo==="placas" ? "Agregar otra placa…" : (campo==="tipologia"?"Todas":"Todos"));
+    var fem = (campo==="tipologia"||campo==="rorig"||campo==="rdest");
+    input.placeholder = sel[campo].length ? "" : (campo==="placas" ? "Agregar otra placa…" : (fem?"Todas":"Todos"));
     var c = $(idsCuenta[campo]);
     if(sel[campo].length){ c.style.display="inline-block"; c.textContent = sel[campo].length; }
     else c.style.display = "none";
@@ -472,16 +586,31 @@
   function aplicar(){
     var kpi = {FIDELIZADA:0, EVENTUAL:0, "POR RECUPERAR":0};
     var totalViajesFiltro = 0;
-    var hayRuta = sel.origen.length || sel.destino.length || sel.cliente.length;
+    var hayRuta = sel.origen.length || sel.destino.length || sel.cliente.length ||
+                  sel.dorig.length || sel.ddest.length || sel.rorig.length || sel.rdest.length;
+    var fRiesgo = $("fRiesgo").value;
+    var fEstadoFlota = $("fEstadoFlota").value;
     resultado = [];
 
     placas.forEach(function(p){
       // placas: si hay lista, la placa debe estar en ella
       if(sel.placas.length && sel.placas.indexOf(p.placa) === -1) return;
+
+      // estado de flota
+      if(fEstadoFlota && p.estado !== fEstadoFlota) return;
+
+      // filtro de riesgo PNC
+      if(fRiesgo){
+        var n = pncPorPlaca[p.placa];
+        if(fRiesgo === "SINPNC"){ if(n && n.total) return; }
+        else if(fRiesgo === "ABIERTOS"){ if(!n || !n.abiertos) return; }
+        else if(fRiesgo === "ALTO"){ if(!n || n.riesgo !== "ALTO") return; }
+        else if(fRiesgo === "MEDIO"){ if(!n || (n.riesgo !== "ALTO" && n.riesgo !== "MEDIO")) return; }
+      }
+
       // tipología: lógica TODAS -> la placa debe cubrir todas las tipologías pedidas
-      // (una placa tiene una tip dominante, pero validamos contra sus rutas/tip)
       if(sel.tipologia.length){
-        if(sel.tipologia.indexOf(p.tip) === -1) return; // su tipología debe estar entre las pedidas
+        if(sel.tipologia.indexOf(p.tip) === -1) return;
         if(sel.tipologia.length > 1) return; // una placa no puede "ser" dos tipologías a la vez
       }
 
@@ -492,6 +621,10 @@
           if(sel.origen.length && sel.origen.indexOf(r.o) === -1) return false;
           if(sel.destino.length && sel.destino.indexOf(r.d) === -1) return false;
           if(sel.cliente.length && sel.cliente.indexOf(r.c) === -1) return false;
+          if(sel.dorig.length && sel.dorig.indexOf(r.od) === -1) return false;
+          if(sel.ddest.length && sel.ddest.indexOf(r.dd) === -1) return false;
+          if(sel.rorig.length && sel.rorig.indexOf(r.orr) === -1) return false;
+          if(sel.rdest.length && sel.rdest.indexOf(r.dr) === -1) return false;
           return true;
         });
         if(!rutasF.length) return;
@@ -500,6 +633,10 @@
         if(!cubreTodos(rutasF, "o", sel.origen)) return;
         if(!cubreTodos(rutasF, "d", sel.destino)) return;
         if(!cubreTodos(rutasF, "c", sel.cliente)) return;
+        if(!cubreTodos(rutasF, "od", sel.dorig)) return;
+        if(!cubreTodos(rutasF, "dd", sel.ddest)) return;
+        if(!cubreTodos(rutasF, "orr", sel.rorig)) return;
+        if(!cubreTodos(rutasF, "dr", sel.rdest)) return;
       }
 
       var vF = p.viajes, ultF = p.ultima;
@@ -537,15 +674,26 @@
     return true;
   }
 
+  $("fRiesgo").addEventListener("change", aplicar);
+  $("fEstadoFlota").addEventListener("change", function(){
+    estadoActivo = $("fEstadoFlota").value;
+    refrescarKpisActivos();
+    aplicar();
+  });
   $("btnLimpiar").addEventListener("click", function(){
     campos.forEach(function(c){ sel[c] = []; $(idsInput[c]).value = ""; pintarTags(c); });
+    $("fRiesgo").value = "";
+    $("fEstadoFlota").value = "";
     estadoActivo = "";
     refrescarKpisActivos();
     aplicar();
   });
   document.querySelectorAll(".kpi[data-estado]").forEach(function(k){
     k.addEventListener("click", function(){
-      estadoActivo = (estadoActivo === k.dataset.estado) ? "" : k.dataset.estado;
+      // el KPI y el select de Estado flota son el mismo filtro: los sincronizo
+      var nuevo = (estadoActivo === k.dataset.estado) ? "" : k.dataset.estado;
+      estadoActivo = nuevo;
+      $("fEstadoFlota").value = nuevo;
       refrescarKpisActivos();
       aplicar();
     });
@@ -579,23 +727,15 @@
     return '<span class="pill '+clase+'"><span class="punto"></span>'+e+'</span>';
   }
 
-  function lineaContacto(clase, icono, persona){
-    if(!persona) return "";
+  function colContacto(persona, rol){
+    if(!persona) return '<div class="col-contacto" data-rol="'+rol+'"><span class="sin-dato">—</span></div>';
     var nombre = persona.nombre || "";
     var cel = (persona.celular || "").replace(/[^\d+]/g,"");
+    var nomHTML = nombre ? '<span class="nom" title="'+esc(nombre)+'">'+esc(nombre)+'</span>' : '<span class="nom sin-dato">sin nombre</span>';
     var telHTML = cel.length >= 7
       ? '<a href="tel:'+esc(cel)+'"><svg class="ico"><use href="#i-tel"/></svg>'+esc(persona.celular)+'</a>'
-      : '<span class="sin-dato">sin cel.</span>';
-    var nomHTML = nombre ? '<span class="nom" title="'+esc(nombre)+'">'+esc(nombre)+'</span>' : '<span class="nom sin-dato">sin nombre</span>';
-    return '<div class="contacto-linea"><span class="rolico '+clase+'"><svg><use href="#'+icono+'"/></svg></span>'+nomHTML+telHTML+'</div>';
-  }
-
-  function contactosHTML(placa){
-    var c = contactos[placa];
-    if(!c) return '<span class="sin-dato">Placa sin ficha en el archivo de placas</span>';
-    return lineaContacto("rol-cond","i-volante", c.cond) +
-           lineaContacto("rol-tene","i-llave", c.tene) +
-           lineaContacto("rol-prop","i-maletin", c.prop);
+      : '<span class="sin-dato">sin celular</span>';
+    return '<div class="col-contacto" data-rol="'+rol+'">'+nomHTML+telHTML+'</div>';
   }
 
   function vehiculoTexto(placa){
@@ -607,31 +747,94 @@
     return partes.length ? '<span class="veh">'+esc(partes.join(" "))+'</span>' : "";
   }
 
+  function claseRiesgo(r){
+    return r === "ALTO" ? "r-alto" : (r === "MEDIO" ? "r-medio" : "r-bajo");
+  }
+  function ptRiesgo(r){
+    return r === "ALTO" ? "rp-alto" : (r === "MEDIO" ? "rp-medio" : "rp-bajo");
+  }
+
+  function pctPncViajes(placa, viajesTotales){
+    var n = pncPorPlaca[placa];
+    var totalPnc = n ? n.total : 0;
+    if(!viajesTotales || !totalPnc){
+      return '<div class="pct-cel cero"><b>'+(totalPnc && !viajesTotales ? "—" : "0%")+'</b><span>'+totalPnc+' pnc / '+(viajesTotales||0)+' v</span></div>';
+    }
+    var pct = totalPnc / viajesTotales * 100;
+    var clase = pct >= 25 ? "alto" : (pct >= 8 ? "medio" : "bajo");
+    var muestra = pct < 1 ? pct.toFixed(1) : Math.round(pct);
+    return '<div class="pct-cel '+clase+'" title="'+totalPnc+' PNC sobre '+viajesTotales+' viajes">' +
+      '<b>'+muestra+'%</b><span>'+totalPnc+' pnc / '+viajesTotales+' v</span></div>';
+  }
+
+  function pncColumnas(placa){
+    var n = pncPorPlaca[placa];
+    if(!n || !n.total){
+      // 3 celdas vacías para mantener la cuadrícula alineada
+      return '<div class="pnc-num cero"><b>0</b><span>abiertos</span></div>' +
+             '<div class="pnc-num cero"><b>0</b><span>cerrados</span></div>' +
+             '<div class="pnc-num cero"><b>—</b><span>sin pnc</span></div>';
+    }
+    var abi = '<div class="pnc-num '+(n.abiertos? "abi":"cero")+'"><b>'+n.abiertos+'</b><span>abiertos</span></div>';
+    var cer = '<div class="pnc-num '+(n.cerrados? "cer":"cero")+'"><b>'+n.cerrados+'</b><span>cerrados</span></div>';
+    var atr = '<div class="pnc-num '+(n.atribuibles? "atr":"cero")+'" title="'+n.pctAtrib+'% del total, riesgo '+n.riesgo+'">'+
+              '<b>'+n.atribuibles+'</b><span>atrib · '+n.pctAtrib+'%</span>'+
+              '<span class="riesgo-pt '+ptRiesgo(n.riesgo)+'" title="Riesgo '+n.riesgo+'"></span></div>';
+    return abi + cer + atr;
+  }
+
+  function pncDetalle(placa){
+    var n = pncPorPlaca[placa];
+    if(!n || !n.total) return '<div class="pnc-bloque"><h4>Novedades (PNC)</h4><p style="font-size:12.5px;color:var(--gris)">Esta placa no registra PNC.</p></div>';
+    var tipos = n.tipos.map(function(t){
+      var pct = Math.round(t.n / n.total * 100);
+      return '<div class="pnc-tipo"><span class="barra" style="width:'+pct+'%"></span>'+
+        '<span class="et">'+esc(t.t)+'</span><span class="cn">'+t.n+'</span></div>';
+    }).join("");
+    return '<div class="pnc-bloque">' +
+      '<h4>Novedades (PNC) · riesgo '+n.riesgo+'</h4>' +
+      '<div class="pnc-resumen">' +
+        '<div class="pnc-dato"><b>'+n.total+'</b><span>Total PNC</span></div>' +
+        '<div class="pnc-dato"><b style="color:var(--rojo)">'+n.atribuibles+'</b><span>Atribuibles ('+n.pctAtrib+'%)</span></div>' +
+        '<div class="pnc-dato"><b style="color:var(--verde)">'+n.cerrados+'</b><span>Cerrados</span></div>' +
+        '<div class="pnc-dato"><b style="color:var(--ambar)">'+n.abiertos+'</b><span>Abiertos</span></div>' +
+        '<div class="pnc-dato"><b>$'+n.dscto.toLocaleString("es-CO")+'</b><span>Descontado afiliado</span></div>' +
+        '<div class="pnc-dato"><b style="font-size:13px">'+fmtFecha(n.ultimo)+'</b><span>Último PNC</span></div>' +
+      '</div>' +
+      '<div class="pnc-tipos"><div class="pnc-tipos-tit">Desglose por tipo:</div>'+tipos+'</div>' +
+    '</div>';
+  }
+
   function fila(res, rank){
     var p = res.p;
     var el = document.createElement("article");
     el.className = "fila";
     var filtrando = res.vF !== p.viajes;
-    var viajesHTML = '<b>'+res.vF.toLocaleString("es-CO")+'</b><span>'+(filtrando ? 'de '+p.viajes.toLocaleString("es-CO") : 'viajes')+'</span>';
+    var viajesHTML = '<b>'+res.vF.toLocaleString("es-CO")+'</b><span>'+(filtrando ? 'de '+p.viajes.toLocaleString("es-CO")+' · ' : '')+'últ. '+fmtFecha(res.ultF || p.ultima)+'</span>';
+    var c = contactos[p.placa];
+
+    var contactosCols = c
+      ? colContacto(c.cond, "Conductor") + colContacto(c.tene, "Tenedor") + colContacto(c.prop, "Propietario")
+      : '<div class="sin-ficha">Placa sin ficha en el archivo de placas</div>';
 
     el.innerHTML =
       '<div class="fila-principal">' +
         '<div class="rank">'+rank+'</div>' +
         '<div><span class="badge-placa">'+esc(p.placa)+'</span></div>' +
         '<div>'+pillEstado(p.estado)+'</div>' +
-        '<div><span class="tip">'+esc(p.tip||"—")+'</span>'+vehiculoTexto(p.placa)+'</div>' +
         '<div class="celda">'+viajesHTML+'</div>' +
-        '<div class="celda"><b style="font-size:13px">'+fmtFecha(res.ultF || p.ultima)+'</b><span>'+haceDias(p.dias)+'</span></div>' +
-        '<div class="celda"><b>'+res.rotF.toLocaleString("es-CO")+'</b><span>viajes/mes</span></div>' +
-        '<div class="contactos">'+contactosHTML(p.placa)+'</div>' +
-        '<button class="btn-expandir" title="Ver historial de rutas" aria-label="Ver historial de rutas"><svg class="ico"><use href="#i-chevron"/></svg></button>' +
+        '<div class="celda"><b>'+res.rotF.toLocaleString("es-CO")+'</b><span>v/mes</span></div>' +
+        pncColumnas(p.placa) +
+        pctPncViajes(p.placa, p.viajes) +
+        contactosCols +
+        '<button class="btn-expandir" title="Ver detalle (PNC y rutas)" aria-label="Ver detalle"><svg class="ico"><use href="#i-chevron"/></svg></button>' +
       '</div>' +
       '<div class="historial"></div>';
 
     el.querySelector(".btn-expandir").addEventListener("click", function(){
       var abierta = el.classList.toggle("abierta");
       var cont = el.querySelector(".historial");
-      if(abierta && !cont.innerHTML) cont.innerHTML = historialHTML(p, res.rutasF);
+      if(abierta && !cont.innerHTML) cont.innerHTML = pncDetalle(p.placa) + historialHTML(p, res.rutasF);
     });
     return el;
   }
@@ -640,7 +843,9 @@
     var marcadas = {};
     rutasFiltradas.forEach(function(r){ marcadas[r.o+"|"+r.d+"|"+r.c] = 1; });
     var filtrando = rutasFiltradas.length !== p.rutas.length;
-    var h = '<h4>Historial de rutas · '+p.rutas.length+' combinaciones · primer viaje '+fmtFecha(p.primera)+'</h4>';
+    var c = contactos[p.placa];
+    var vehInfo = c && (c.marca || c.modelo) ? ' · '+esc([c.marca, c.modelo].filter(Boolean).join(" ")) : "";
+    var h = '<h4>'+esc(p.tip||"—")+vehInfo+' · Historial de rutas · '+p.rutas.length+' combinaciones · primer viaje '+fmtFecha(p.primera)+'</h4>';
     p.rutas.forEach(function(r){
       var resaltada = filtrando && marcadas[r.o+"|"+r.d+"|"+r.c];
       h += '<div class="ruta'+(resaltada ? " resaltada" : "")+'">' +
@@ -657,12 +862,16 @@
   $("btnExportar").addEventListener("click", function(){
     if(!resultado.length) return;
     var cab = ["#","PLACA","ESTADO","TIPOLOGIA","VIAJES EN FILTRO","VIAJES TOTALES","ULTIMA CARGA","DIAS SIN CARGAR","ROTACION VIAJES/MES",
+      "PNC TOTAL","PNC ABIERTOS","PNC CERRADOS","PNC ATRIBUIBLES","% ATRIBUIBLES","% PNC/VIAJES","RIESGO PNC","DESCONTADO AFILIADO","TIPO PNC PRINCIPAL",
       "CONDUCTOR","CEL CONDUCTOR","TENEDOR","CEL TENEDOR","PROPIETARIO","CEL PROPIETARIO","RUTA PRINCIPAL","CLIENTE PRINCIPAL"];
     var filas = resultado.map(function(res, i){
       var p = res.p, c = contactos[p.placa] || {};
       var co = c.cond||{}, te = c.tene||{}, pr = c.prop||{};
+      var n = pncPorPlaca[p.placa] || {};
       var r0 = res.rutasF[0] || p.rutas[0] || {};
+      var pctPV = (n.total && p.viajes) ? Math.round(n.total / p.viajes * 1000)/10 : 0;
       return [i+1, p.placa, p.estado, p.tip, res.vF, p.viajes, fmtFecha(res.ultF || p.ultima), p.dias, res.rotF,
+        n.total||0, n.abiertos||0, n.cerrados||0, n.atribuibles||0, (n.pctAtrib||0), pctPV, n.riesgo||"SIN PNC", n.dscto||0, n.tipoTop||"",
         co.nombre||"", co.celular||"", te.nombre||"", te.celular||"", pr.nombre||"", pr.celular||"",
         (r0.o ? r0.o+" - "+r0.d : ""), r0.c || ""]
         .map(function(v){ return '"' + String(v===undefined?"":v).replace(/"/g,'""') + '"'; }).join(";");

@@ -58,28 +58,9 @@ UNIFICAR_CLIENTES = {
     "ESENTTIA": [
         "ESENTTIA BY PROPILCO",
         "ESENTTIA MASTERBATCH LTDA",
-        "ESENTTIA MARTERBATCH CROSS",
+        "ESENTTIA MARTERBATCH CROSS",   # nota: "MARTERBATCH" es un error de tipeo en el origen
         "ESENTTIA MASTERBATCH CROSS",
-        "ESENTTIA CROSS",
-        "ESENTTIA CROSS CARMEN PADRON",
-        "ESENTTIA CROSS ESPECIFICO",
     ],
-    "COLOMBIANA KIMBERLY COLPAPEL S.A.S": [
-        "COLOMBIANA KIMBERLY COLPAPEL",
-    ],
-    "MEXICHEM RESINAS": [
-        "MEXICHEM RESNAS COLOMBIA",
-    ],
-    "TECNOQUIMICAS SAS": [
-        "TECNOQUIMICAS SA",
-    ],
-    "PRODUCTOS FAMILIA SA": [
-        "PRODUCTOS FAMILIA CAJICA SAS",
-    ],
-    "C.H. PEREIRA & CIA SAS": [
-        "GLC INGENIERIA S.A.S (C.H. PEREIRA)",
-    ],
-    # Para agregar un grupo nuevo, copia una linea con el formato:
     # "NOMBRE OFICIAL": ["VARIANTE A", "VARIANTE B"],
 }
 
@@ -94,6 +75,119 @@ for _oficial, _variantes in UNIFICAR_CLIENTES.items():
 def unificar_cliente(nombre):
     """Devuelve el nombre oficial si el cliente está en la tabla; si no, lo deja igual."""
     return _MAPA_CLIENTES.get(nombre, nombre)
+
+
+# ============================================================
+# 🗺️ CIUDAD -> DEPARTAMENTO
+# Mapa de las ciudades que aparecen en los viajes a su departamento.
+# Si una ciudad no está aquí, su departamento queda "OTRO" (revísalo en la
+# lista que imprime el script al final y agrégala).
+# ============================================================
+CIUDAD_DEPTO = {
+    # --- Antioquia ---
+    "MEDELLIN": "ANTIOQUIA", "BELLO": "ANTIOQUIA", "ITAGUI": "ANTIOQUIA",
+    "ENVIGADO": "ANTIOQUIA", "SABANETA": "ANTIOQUIA", "LA ESTRELLA": "ANTIOQUIA",
+    "CALDAS": "ANTIOQUIA", "COPACABANA": "ANTIOQUIA", "GIRARDOTA": "ANTIOQUIA",
+    "BARBOSA": "ANTIOQUIA", "RIONEGRO": "ANTIOQUIA", "GUARNE": "ANTIOQUIA",
+    "MARINILLA": "ANTIOQUIA", "LA CEJA": "ANTIOQUIA", "EL RETIRO": "ANTIOQUIA",
+    "RETIRO": "ANTIOQUIA", "EL CARMEN DE VIBORAL": "ANTIOQUIA", "GUATAPE": "ANTIOQUIA",
+    "SANTAFE DE ANTIOQUIA": "ANTIOQUIA", "SANTA FE DE ANTIOQUIA": "ANTIOQUIA",
+    "SOPETRAN": "ANTIOQUIA", "SANTA ROSA DE OSOS": "ANTIOQUIA", "YARUMAL": "ANTIOQUIA",
+    "AMAGA": "ANTIOQUIA", "VENECIA": "ANTIOQUIA", "FREDONIA": "ANTIOQUIA",
+    "SONSON": "ANTIOQUIA", "LA UNION": "ANTIOQUIA", "GUARNE": "ANTIOQUIA",
+    "CISNEROS": "ANTIOQUIA", "PUERTO BERRIO": "ANTIOQUIA", "CAUCASIA": "ANTIOQUIA",
+    "APARTADO": "ANTIOQUIA", "TURBO": "ANTIOQUIA", "CAREPA": "ANTIOQUIA",
+    # --- Cundinamarca / Bogotá ---
+    "BOGOTA": "CUNDINAMARCA", "BOGOTÁ": "CUNDINAMARCA", "BOGOTA D.C.": "CUNDINAMARCA",
+    "SOACHA": "CUNDINAMARCA", "FUNZA": "CUNDINAMARCA", "MADRID": "CUNDINAMARCA",
+    "MOSQUERA": "CUNDINAMARCA", "CHIA": "CUNDINAMARCA", "CAJICA": "CUNDINAMARCA",
+    "ZIPAQUIRA": "CUNDINAMARCA", "GACHANCIPA": "CUNDINAMARCA", "COTA": "CUNDINAMARCA",
+    "TENJO": "CUNDINAMARCA", "TOCANCIPA": "CUNDINAMARCA", "FACATATIVA": "CUNDINAMARCA",
+    "SOPO": "CUNDINAMARCA", "LA CALERA": "CUNDINAMARCA", "PACHO": "CUNDINAMARCA",
+    "VILLA DE SAN DIEGO DE UBATE": "CUNDINAMARCA", "UBATE": "CUNDINAMARCA",
+    "FUSAGASUGA": "CUNDINAMARCA", "GIRARDOT": "CUNDINAMARCA", "GUACHETA": "CUNDINAMARCA",
+    "GUATEQUE": "CUNDINAMARCA", "GUADUAS": "CUNDINAMARCA",
+    # --- Valle del Cauca ---
+    "SANTIAGO DE CALI": "VALLE DEL CAUCA", "CALI": "VALLE DEL CAUCA",
+    "YUMBO": "VALLE DEL CAUCA", "PALMIRA": "VALLE DEL CAUCA", "CARTAGO": "VALLE DEL CAUCA",
+    "BUGA": "VALLE DEL CAUCA", "TULUA": "VALLE DEL CAUCA", "BUENAVENTURA": "VALLE DEL CAUCA",
+    "JAMUNDI": "VALLE DEL CAUCA", "CANDELARIA": "VALLE DEL CAUCA",
+    # --- Cauca (corredor sur, lo agrupo aparte) ---
+    "CALOTO": "CAUCA", "PUERTO TEJADA": "CAUCA", "VILLA RICA": "CAUCA",
+    "SANTANDER DE QUILICHAO": "CAUCA", "POPAYAN": "CAUCA", "GUACHENE": "CAUCA",
+    # --- Costa: Atlántico ---
+    "BARRANQUILLA": "ATLANTICO", "SOLEDAD": "ATLANTICO", "GALAPA": "ATLANTICO",
+    "MALAMBO": "ATLANTICO", "PUERTO COLOMBIA": "ATLANTICO", "SABANALARGA": "ATLANTICO",
+    # --- Costa: Bolívar ---
+    "CARTAGENA": "BOLIVAR", "TURBACO": "BOLIVAR", "MAGANGUE": "BOLIVAR",
+    "ARJONA": "BOLIVAR", "MOMPOS": "BOLIVAR",
+    # --- Costa: Magdalena ---
+    "SANTA MARTA": "MAGDALENA", "CIENAGA": "MAGDALENA", "FUNDACION": "MAGDALENA",
+    "EL BANCO": "MAGDALENA",
+    # --- Costa: Córdoba ---
+    "MONTERIA": "CORDOBA", "CERETE": "CORDOBA", "LORICA": "CORDOBA", "SAHAGUN": "CORDOBA",
+    "PLANETA RICA": "CORDOBA", "MONTELIBANO": "CORDOBA",
+    # --- Costa: Sucre ---
+    "SINCELEJO": "SUCRE", "COROZAL": "SUCRE", "SAMPUES": "SUCRE",
+    # --- Costa: Cesar ---
+    "VALLEDUPAR": "CESAR", "AGUACHICA": "CESAR", "LA JAGUA DE IBIRICO": "CESAR",
+    "BOSCONIA": "CESAR", "CODAZZI": "CESAR",
+    # --- Costa: La Guajira ---
+    "RIOHACHA": "LA GUAJIRA", "MAICAO": "LA GUAJIRA", "FONSECA": "LA GUAJIRA",
+    "ALBANIA": "LA GUAJIRA",
+    # --- Santander ---
+    "BUCARAMANGA": "SANTANDER", "FLORIDABLANCA": "SANTANDER", "GIRON": "SANTANDER",
+    "PIEDECUESTA": "SANTANDER", "BARRANCABERMEJA": "SANTANDER", "SAN GIL": "SANTANDER",
+    "SOCORRO": "SANTANDER", "SABANA DE TORRES": "SANTANDER", "PUERTO WILCHES": "SANTANDER",
+    "BARBOSA SANTANDER": "SANTANDER",
+    # --- Norte de Santander ---
+    "CUCUTA": "NORTE DE SANTANDER", "OCANA": "NORTE DE SANTANDER", "PAMPLONA": "NORTE DE SANTANDER",
+    "LOS PATIOS": "NORTE DE SANTANDER", "VILLA DEL ROSARIO": "NORTE DE SANTANDER",
+    # --- Boyacá ---
+    "TUNJA": "BOYACA", "SOGAMOSO": "BOYACA", "DUITAMA": "BOYACA", "PAIPA": "BOYACA",
+    "CHIQUINQUIRA": "BOYACA", "VILLA DE LEYVA": "BOYACA", "MONIQUIRA": "BOYACA",
+    "PUERTO BOYACA": "BOYACA", "BARBOSA BOYACA": "BOYACA", "SAMACA": "BOYACA",
+    "NOBSA": "BOYACA", "TIBASOSA": "BOYACA",
+    # --- Tolima ---
+    "IBAGUE": "TOLIMA", "ESPINAL": "TOLIMA", "MARIQUITA": "TOLIMA", "HONDA": "TOLIMA",
+    "MELGAR": "TOLIMA", "PURIFICACION": "TOLIMA", "PUERTO TRIUNFO": "ANTIOQUIA",
+    # --- Eje Cafetero ---
+    "PEREIRA": "RISARALDA", "DOSQUEBRADAS": "RISARALDA", "LA VIRGINIA": "RISARALDA",
+    "MANIZALES": "CALDAS_DEP", "VILLAMARIA": "CALDAS_DEP", "CHINCHINA": "CALDAS_DEP",
+    "ARMENIA": "QUINDIO", "MONTENEGRO": "QUINDIO", "CALARCA": "QUINDIO",
+    # --- Huila ---
+    "NEIVA": "HUILA", "PITALITO": "HUILA", "GARZON": "HUILA",
+    # --- Meta ---
+    "VILLAVICENCIO": "META", "ACACIAS": "META", "GRANADA META": "META",
+    # --- Nariño ---
+    "PASTO": "NARINO", "IPIALES": "NARINO", "TUMACO": "NARINO",
+    # --- otros que aparecen ---
+    "PALERMO": "HUILA", "LA UNION": "ANTIOQUIA",
+}
+
+# ============================================================
+# 🌎 DEPARTAMENTO -> REGIÓN / ZONA
+# ============================================================
+DEPTO_REGION = {
+    "ATLANTICO": "COSTA", "BOLIVAR": "COSTA", "MAGDALENA": "COSTA",
+    "CORDOBA": "COSTA", "SUCRE": "COSTA", "CESAR": "COSTA", "LA GUAJIRA": "COSTA",
+    "ANTIOQUIA": "ANTIOQUIA",
+    "CUNDINAMARCA": "CUNDINAMARCA/BOGOTA",
+    "VALLE DEL CAUCA": "VALLE", "CAUCA": "VALLE",
+    "SANTANDER": "SANTANDERES", "NORTE DE SANTANDER": "SANTANDERES",
+    "BOYACA": "BOYACA",
+    "RISARALDA": "EJE/OTROS", "CALDAS_DEP": "EJE/OTROS", "QUINDIO": "EJE/OTROS",
+    "TOLIMA": "EJE/OTROS", "HUILA": "EJE/OTROS", "META": "EJE/OTROS",
+    "NARINO": "EJE/OTROS", "OTRO": "EJE/OTROS",
+}
+
+
+def depto_de(ciudad):
+    return CIUDAD_DEPTO.get(ciudad, "OTRO")
+
+
+def region_de(depto):
+    return DEPTO_REGION.get(depto, "EJE/OTROS")
 
 
 def limpio(v):
@@ -248,8 +342,11 @@ def main():
 
         rutas = []
         for (o, d, c), r in f["rutas"].items():
+            od, dd = depto_de(o), depto_de(d)
             rutas.append({
                 "o": o, "d": d, "c": c,
+                "od": od, "dd": dd,           # departamento origen / destino
+                "orr": region_de(od), "dr": region_de(dd),  # región origen / destino
                 "n": len(r["envios"]),
                 "f": r["ult"].strftime("%Y-%m-%d") if r["ult"] else "",
             })
@@ -288,6 +385,12 @@ def main():
         json.dump(paquete, f, ensure_ascii=False, separators=(",", ":"))
         f.write(";\n")
 
+    # Lista de manifiestos (envíos) válidos del periodo de viajes, para que
+    # convertir_pnc.py solo cuente PNC cuyo manifiesto exista aquí.
+    ruta_manif = os.path.join(os.path.dirname(os.path.abspath(__file__)), "manifiestos_validos.json")
+    with open(ruta_manif, "w", encoding="utf-8") as f:
+        json.dump(sorted(envios_globales), f, ensure_ascii=False, separators=(",", ":"))
+
     peso = os.path.getsize(SALIDA) / 1024 / 1024
     fid = sum(1 for p in placas_out if p["estado"] == "FIDELIZADA")
     eve = sum(1 for p in placas_out if p["estado"] == "EVENTUAL")
@@ -300,6 +403,22 @@ def main():
     print(f"\n📋 {len(clientes_finales)} clientes (ya unificados). Revisa si hay variantes que falte agrupar:")
     for c in sorted(clientes_finales):
         print("   - " + c)
+
+    # Ciudades sin departamento asignado (para que las agregues a CIUDAD_DEPTO)
+    ciudades = set()
+    for p in placas_out:
+        for r in p["rutas"]:
+            if r["od"] == "OTRO" and r["o"]:
+                ciudades.add(r["o"])
+            if r["dd"] == "OTRO" and r["d"]:
+                ciudades.add(r["d"])
+    if ciudades:
+        print(f"\n⚠️ {len(ciudades)} ciudad(es) SIN departamento asignado (quedaron como OTRO/EJE-OTROS).")
+        print("   Agrégalas a la tabla CIUDAD_DEPTO en convertir_viajes.py:")
+        for c in sorted(ciudades):
+            print("   - " + c)
+    else:
+        print("\n✅ Todas las ciudades tienen departamento asignado.")
 
 
 if __name__ == "__main__":
