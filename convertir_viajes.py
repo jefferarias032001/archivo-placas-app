@@ -58,9 +58,28 @@ UNIFICAR_CLIENTES = {
     "ESENTTIA": [
         "ESENTTIA BY PROPILCO",
         "ESENTTIA MASTERBATCH LTDA",
-        "ESENTTIA MARTERBATCH CROSS",   # nota: "MARTERBATCH" es un error de tipeo en el origen
+        "ESENTTIA MARTERBATCH CROSS",
         "ESENTTIA MASTERBATCH CROSS",
+        "ESENTTIA CROSS",
+        "ESENTTIA CROSS CARMEN PADRON",
+        "ESENTTIA CROSS ESPECIFICO",
     ],
+    "COLOMBIANA KIMBERLY COLPAPEL S.A.S": [
+        "COLOMBIANA KIMBERLY COLPAPEL",
+    ],
+    "MEXICHEM RESINAS": [
+        "MEXICHEM RESNAS COLOMBIA",
+    ],
+    "TECNOQUIMICAS SAS": [
+        "TECNOQUIMICAS SA",
+    ],
+    "PRODUCTOS FAMILIA SA": [
+        "PRODUCTOS FAMILIA CAJICA SAS",
+    ],
+    "C.H. PEREIRA & CIA SAS": [
+        "GLC INGENIERIA S.A.S (C.H. PEREIRA)",
+    ],
+    # Para agregar un grupo nuevo, copia una linea con el formato:
     # "NOMBRE OFICIAL": ["VARIANTE A", "VARIANTE B"],
 }
 
