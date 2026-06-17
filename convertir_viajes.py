@@ -40,6 +40,42 @@ SALIDA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data_viajes.j
 DIAS_FIDELIZADA = 30
 DIAS_EVENTUAL = 90
 
+# ============================================================
+# 🔁 UNIFICACIÓN DE CLIENTES
+# Algunos clientes vienen escritos de varias formas. Aquí defines
+# el nombre OFICIAL y todas las variantes que deben convertirse en él.
+#
+# Formato:  "NOMBRE OFICIAL": ["variante 1", "variante 2", ...]
+# (escribe todo en MAYÚSCULAS; el script compara en mayúsculas)
+#
+# Para agregar un grupo nuevo: copia una línea y edítala.
+# ============================================================
+UNIFICAR_CLIENTES = {
+    "ALIMENTOS POLAR SAS": [
+        "ALIMENTOS POLAR COLOMBIA SAS",
+        "ALIMENTOS POLAR COLOMBIA S.A.S",
+    ],
+    "ESENTTIA": [
+        "ESENTTIA BY PROPILCO",
+        "ESENTTIA MASTERBATCH LTDA",
+        "ESENTTIA MARTERBATCH CROSS",   # nota: "MARTERBATCH" es un error de tipeo en el origen
+        "ESENTTIA MASTERBATCH CROSS",
+    ],
+    # "NOMBRE OFICIAL": ["VARIANTE A", "VARIANTE B"],
+}
+
+# Se construye un diccionario inverso variante -> oficial (en mayúsculas)
+_MAPA_CLIENTES = {}
+for _oficial, _variantes in UNIFICAR_CLIENTES.items():
+    _MAPA_CLIENTES[_oficial.strip().upper()] = _oficial.strip().upper()
+    for _v in _variantes:
+        _MAPA_CLIENTES[_v.strip().upper()] = _oficial.strip().upper()
+
+
+def unificar_cliente(nombre):
+    """Devuelve el nombre oficial si el cliente está en la tabla; si no, lo deja igual."""
+    return _MAPA_CLIENTES.get(nombre, nombre)
+
 
 def limpio(v):
     if v is None:
@@ -98,6 +134,7 @@ def main():
     #                 "ult": date, "pri": date, "tipologia": {tip: n}}
     flota = {}
     envios_globales = set()
+    clientes_finales = set()
     fecha_min, fecha_max = None, None
     filas_totales = 0
 
@@ -144,7 +181,9 @@ def main():
             fecha = a_fecha(col("Fecha Creacion"))
             origen = limpio(col("Ciudad Origen")).upper()
             destino = limpio(col("Ciudad Destino")).upper()
-            cliente = limpio(col("Cliente")).upper()
+            cliente = unificar_cliente(limpio(col("Cliente")).upper())
+            if cliente:
+                clientes_finales.add(cliente)
             tip = limpio(col("Tipologia")).upper()
 
             if fecha:
@@ -237,6 +276,11 @@ def main():
     print(f"\n✅ data_viajes.js generado — {peso:.1f} MB")
     print(f"   {len(placas_out):,} placas · {len(envios_globales):,} viajes · {fecha_min} → {fecha_max}")
     print(f"   Fidelizadas: {fid:,} · Eventuales: {eve:,} · Por recuperar: {rec:,}")
+
+    # Lista de clientes finales (ya unificados) para que detectes variantes pendientes.
+    print(f"\n📋 {len(clientes_finales)} clientes (ya unificados). Revisa si hay variantes que falte agrupar:")
+    for c in sorted(clientes_finales):
+        print("   - " + c)
 
 
 if __name__ == "__main__":

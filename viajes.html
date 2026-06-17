@@ -41,37 +41,19 @@
   .logo .titulo b{font-weight:800;font-size:16px}
   .logo .titulo span{font-size:11px;color:#A9BCE3;font-weight:600;letter-spacing:1.5px;text-transform:uppercase}
   nav{display:flex;gap:6px;margin-left:8px}
-  nav a{
-    color:#C7D4EF;text-decoration:none;font-weight:700;font-size:13.5px;
-    padding:7px 14px;border-radius:8px;transition:background .12s ease;
-  }
+  nav a{color:#C7D4EF;text-decoration:none;font-weight:700;font-size:13.5px;padding:7px 14px;border-radius:8px;transition:background .12s ease}
   nav a:hover{background:rgba(255,255,255,.1);color:#fff}
   nav a.activa{background:rgba(255,255,255,.14);color:#fff;box-shadow:inset 0 -2px 0 var(--naranja)}
   .header-acciones{margin-left:auto;display:flex;gap:10px;align-items:center}
-  .btn{
-    font-family:'Manrope',sans-serif;font-weight:700;font-size:13.5px;
-    border:none;border-radius:8px;padding:9px 16px;cursor:pointer;
-    display:inline-flex;align-items:center;gap:7px;
-    transition:transform .1s ease, background .15s ease;
-  }
+  .btn{font-family:'Manrope',sans-serif;font-weight:700;font-size:13.5px;border:none;border-radius:8px;padding:9px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:transform .1s ease, background .15s ease}
   .btn:hover{transform:translateY(-1px)}
   .btn:focus-visible{outline:3px solid var(--naranja);outline-offset:2px}
   .btn-naranja{background:var(--naranja);color:#23150A;box-shadow:0 3px 10px rgba(243,154,31,.4)}
   .btn-naranja:hover{background:#FFAA33}
 
   /* KPIs */
-  #kpis{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-    gap:12px;max-width:1320px;margin:18px auto 0;padding:0 28px;
-  }
-  .kpi{
-    background:var(--blanco);border:1px solid var(--linea);border-radius:12px;
-    padding:13px 16px;display:flex;align-items:center;gap:12px;
-    box-shadow:var(--sombra);cursor:pointer;border-bottom:3px solid transparent;
-    transition:transform .12s ease;
-    text-align:left;font-family:'Manrope',sans-serif;
-  }
+  #kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;max-width:1320px;margin:18px auto 0;padding:0 28px}
+  .kpi{background:var(--blanco);border:1px solid var(--linea);border-radius:12px;padding:13px 16px;display:flex;align-items:center;gap:12px;box-shadow:var(--sombra);cursor:pointer;border-bottom:3px solid transparent;transition:transform .12s ease;text-align:left;font-family:'Manrope',sans-serif}
   .kpi:hover{transform:translateY(-2px)}
   .kpi:focus-visible{outline:3px solid var(--naranja);outline-offset:2px}
   .kpi.activa{border-bottom-color:currentColor}
@@ -87,51 +69,61 @@
   .k-fid.activa{color:var(--verde)} .k-eve.activa{color:var(--ambar)} .k-rec.activa{color:var(--rojo)}
 
   /* Filtros */
-  #barraFiltros{
-    background:var(--blanco);border-bottom:1px solid var(--linea);
-    padding:14px 28px;position:sticky;top:71px;z-index:20;
-    box-shadow:0 4px 12px rgba(11,31,71,.04);margin-top:18px;
-  }
-  .fila-filtros{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;max-width:1320px;margin:0 auto}
-  .campo{display:flex;flex-direction:column;gap:4px}
+  #barraFiltros{background:var(--blanco);border-bottom:1px solid var(--linea);padding:14px 28px;position:sticky;top:71px;z-index:20;box-shadow:0 4px 12px rgba(11,31,71,.04);margin-top:18px}
+  .fila-filtros{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;max-width:1320px;margin:0 auto}
+  .campo{display:flex;flex-direction:column;gap:5px;position:relative}
   .campo label{font-size:10.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--gris);display:flex;align-items:center;gap:5px}
   .campo label .ico{width:12px;height:12px}
-  .campo input,.campo select{
-    font-family:'Manrope',sans-serif;font-size:13.5px;font-weight:500;
-    padding:9px 11px;border:1.5px solid #D8DFEC;border-radius:8px;
-    background:#FAFBFE;min-width:140px;color:var(--tinta);
+  .campo label .cuenta{background:var(--azul);color:#fff;border-radius:99px;font-size:9.5px;padding:1px 6px;letter-spacing:0}
+
+  /* caja multiselección con chips */
+  .multi{
+    min-width:200px;background:#FAFBFE;border:1.5px solid #D8DFEC;border-radius:8px;
+    padding:5px 6px;display:flex;flex-wrap:wrap;gap:5px;align-items:center;cursor:text;
+    min-height:40px;transition:border-color .12s ease;
   }
-  .campo input:focus,.campo select:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(21,65,140,.12)}
+  .multi.foco{border-color:var(--azul);box-shadow:0 0 0 3px rgba(21,65,140,.12)}
+  .multi .tag{
+    background:var(--azul);color:#fff;border-radius:6px;font-size:12px;font-weight:700;
+    padding:3px 6px 3px 9px;display:inline-flex;align-items:center;gap:5px;max-width:200px;
+  }
+  .multi .tag span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .multi .tag b{cursor:pointer;font-weight:800;font-size:14px;line-height:1;opacity:.8;padding:0 1px}
+  .multi .tag b:hover{opacity:1}
+  .multi input{
+    border:none;background:none;outline:none;font-family:'Manrope',sans-serif;
+    font-size:13.5px;padding:4px;flex:1;min-width:90px;color:var(--tinta);
+  }
+  .multi.placas .tag{background:var(--marino)}
+  /* sugerencias */
+  .sugerencias{
+    position:absolute;top:100%;left:0;right:0;margin-top:4px;background:#fff;
+    border:1px solid var(--linea);border-radius:10px;box-shadow:0 8px 24px rgba(11,31,71,.16);
+    max-height:260px;overflow-y:auto;z-index:40;display:none;
+  }
+  .sugerencias.abierta{display:block}
+  .sugerencias div{padding:8px 12px;font-size:13.5px;cursor:pointer;display:flex;justify-content:space-between;gap:10px}
+  .sugerencias div:hover,.sugerencias div.activa{background:#EEF3FB}
+  .sugerencias div .n{color:var(--gris);font-weight:700;font-size:12px}
+  .sugerencias .vacio{color:var(--gris);cursor:default}
+  .sugerencias .vacio:hover{background:none}
 
   /* Listado */
   main{max-width:1320px;margin:0 auto;padding:18px 28px 60px}
   #resumen{font-size:13.5px;color:var(--gris);margin-bottom:12px;font-weight:600}
   #resumen b{color:var(--tinta)}
-  .fila{
-    background:var(--blanco);border:1px solid var(--linea);border-radius:12px;
-    margin-bottom:8px;box-shadow:var(--sombra);overflow:hidden;
-    animation:aparecer .2s ease both;
-  }
+  .fila{background:var(--blanco);border:1px solid var(--linea);border-radius:12px;margin-bottom:8px;box-shadow:var(--sombra);overflow:hidden;animation:aparecer .2s ease both}
   @keyframes aparecer{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
   .fila-principal{
     display:grid;
-    grid-template-columns:34px 150px 105px 1fr 120px 95px 85px minmax(170px,210px) 36px;
-    gap:10px;align-items:center;padding:11px 14px;
+    grid-template-columns:34px 130px 100px 150px 92px 92px 78px 1fr 36px;
+    gap:12px;align-items:center;padding:11px 14px;
   }
   .rank{font-weight:800;color:#A8B3C9;font-size:13px;text-align:center}
-  .badge-placa{
-    background:linear-gradient(180deg,#FFB23E,var(--naranja));
-    border:2px solid var(--marino);border-radius:6px;
-    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;
-    letter-spacing:2.5px;color:var(--marino);padding:1px 10px;
-    display:inline-block;text-align:center;
-  }
+  .badge-placa{background:linear-gradient(180deg,#FFB23E,var(--naranja));border:2px solid var(--marino);border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:2.5px;color:var(--marino);padding:1px 10px;display:inline-block;text-align:center}
   .tip{font-size:10.5px;font-weight:800;color:var(--azul);background:#E5EDFB;border-radius:5px;padding:3px 7px;display:inline-block;letter-spacing:.4px}
-  .pill{
-    font-size:10px;font-weight:800;letter-spacing:.5px;
-    border-radius:99px;padding:4px 10px;display:inline-flex;align-items:center;gap:5px;
-    white-space:nowrap;
-  }
+  .veh{font-size:11.5px;color:var(--gris);font-weight:600;margin-top:3px;display:block}
+  .pill{font-size:10px;font-weight:800;letter-spacing:.5px;border-radius:99px;padding:4px 10px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
   .pill .punto{width:6px;height:6px;border-radius:50%;background:currentColor}
   .p-fid{background:var(--verde-suave);color:var(--verde)}
   .p-eve{background:var(--ambar-suave);color:var(--ambar)}
@@ -139,32 +131,29 @@
   .celda{line-height:1.25}
   .celda b{font-size:15px;font-weight:800;display:block}
   .celda span{font-size:10.5px;color:var(--gris);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
-  .contacto-mini{line-height:1.2;min-width:0}
-  .contacto-mini .nom{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
-  .contacto-mini a{
-    color:var(--azul);font-weight:800;text-decoration:none;font-size:12.5px;
-    display:inline-flex;align-items:center;gap:4px;margin-top:2px;
-    padding:3px 8px;border-radius:6px;background:#F1F5FC;
-  }
-  .contacto-mini a:hover{background:#E0EAFA}
-  .contacto-mini a .ico{width:12px;height:12px}
-  .sin-dato{color:#A8B3C9;font-weight:500;font-size:12px}
-  .btn-expandir{
-    background:#F1F4F9;border:none;border-radius:8px;width:30px;height:30px;
-    cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--gris);
-    transition:background .12s ease;
-  }
+
+  /* bloque de 3 contactos */
+  .contactos{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .contacto-linea{display:flex;align-items:center;gap:7px;min-width:0}
+  .contacto-linea .rolico{width:22px;height:22px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+  .contacto-linea .rolico svg{width:12px;height:12px}
+  .rol-cond{background:#E5EDFB;color:var(--azul)}
+  .rol-tene{background:var(--naranja-suave);color:var(--ambar)}
+  .rol-prop{background:#EBE9FA;color:#5B4FBE}
+  .contacto-linea .nom{font-size:11.5px;font-weight:600;color:var(--tinta);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+  .contacto-linea a{color:var(--azul);font-weight:800;text-decoration:none;font-size:12px;display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:6px;background:#F1F5FC;white-space:nowrap}
+  .contacto-linea a:hover{background:#E0EAFA}
+  .contacto-linea a .ico{width:11px;height:11px}
+  .sin-dato{color:#B8C0D0;font-weight:500;font-size:11px}
+
+  .btn-expandir{background:#F1F4F9;border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--gris);transition:background .12s ease}
   .btn-expandir:hover{background:#E2E8F2;color:var(--azul)}
   .btn-expandir .ico{transition:transform .15s ease}
   .fila.abierta .btn-expandir .ico{transform:rotate(180deg)}
   .historial{display:none;border-top:1px solid var(--linea);background:#F9FAFD;padding:12px 16px}
   .fila.abierta .historial{display:block}
   .historial h4{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--gris);margin-bottom:8px}
-  .ruta{
-    display:grid;grid-template-columns:1fr minmax(160px,260px) 70px 95px;
-    gap:10px;align-items:center;
-    padding:6px 10px;border-radius:8px;font-size:13px;
-  }
+  .ruta{display:grid;grid-template-columns:1fr minmax(160px,260px) 70px 95px;gap:10px;align-items:center;padding:6px 10px;border-radius:8px;font-size:13px}
   .ruta:nth-child(even){background:#fff}
   .ruta.resaltada{background:var(--naranja-suave);box-shadow:inset 3px 0 0 var(--naranja)}
   .ruta .trayecto{font-weight:700}
@@ -180,17 +169,13 @@
   #errorDatos{max-width:680px;margin:10vh auto;text-align:center;padding:0 20px;display:none}
   #errorDatos h2{font-size:24px;font-weight:800;margin-bottom:10px}
   #errorDatos p{color:var(--gris)}
-  .encabezado-tabla{
-    display:grid;
-    grid-template-columns:34px 150px 105px 1fr 120px 95px 85px minmax(170px,210px) 36px;
-    gap:10px;padding:0 14px 6px;
-    font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#8B96AC;
-  }
+  .encabezado-tabla{display:grid;grid-template-columns:34px 130px 100px 150px 92px 92px 78px 1fr 36px;gap:12px;padding:0 14px 6px;font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#8B96AC}
 
-  @media (max-width:1000px){
+  @media (max-width:1050px){
     .encabezado-tabla{display:none}
-    .fila-principal{grid-template-columns:1fr 1fr;padding:13px 14px;gap:8px}
+    .fila-principal{grid-template-columns:1fr 1fr;padding:13px 14px;gap:10px}
     .rank{display:none}
+    .contactos{grid-column:1 / -1;border-top:1px dashed var(--linea);padding-top:8px}
     .historial .ruta{grid-template-columns:1fr 70px;row-gap:2px}
     .ruta .cli{grid-column:1 / -1}
     .ruta .fe{text-align:left}
@@ -202,8 +187,8 @@
     #kpis{padding:0 14px;grid-template-columns:repeat(2,1fr)}
     #barraFiltros{top:60px;padding:10px 14px}
     main{padding:14px 14px 50px}
-    .campo input,.campo select{min-width:0;width:100%}
-    .campo{flex:1 1 45%}
+    .campo,.multi{min-width:0;width:100%}
+    .campo{flex:1 1 100%}
   }
 </style>
 </head>
@@ -212,6 +197,9 @@
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <symbol id="i-camion" viewBox="0 0 24 24"><path d="M1 7h12v9H1zM13 10h4l3 3v3h-7z"/><circle cx="6" cy="18" r="2"/><circle cx="16.5" cy="18" r="2"/></symbol>
+    <symbol id="i-volante" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/><path d="M3.5 10.5 9.7 12M20.5 10.5 14.3 12M12 14.5V21"/></symbol>
+    <symbol id="i-llave" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 21 2M14 8l3 3M18 4l2.5 2.5"/></symbol>
+    <symbol id="i-maletin" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></symbol>
     <symbol id="i-tel" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.13.97.36 1.9.7 2.8a2 2 0 0 1-.45 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.25a2 2 0 0 1 2.1-.45c.9.34 1.83.57 2.8.7a2 2 0 0 1 1.7 2Z"/></symbol>
     <symbol id="i-buscar" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
     <symbol id="i-descargar" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></symbol>
@@ -249,52 +237,58 @@
 
 <section id="kpis" aria-label="Indicadores de flota">
   <button class="kpi k-fid" data-estado="FIDELIZADA" title="Cargó en los últimos 30 días — clic para filtrar">
-    <div class="icono"><svg><use href="#i-check"/></svg></div>
-    <div><b id="kFid">—</b><span>Fidelizadas</span></div>
+    <div class="icono"><svg><use href="#i-check"/></svg></div><div><b id="kFid">—</b><span>Fidelizadas</span></div>
   </button>
   <button class="kpi k-eve" data-estado="EVENTUAL" title="Cargó entre 31 y 90 días — clic para filtrar">
-    <div class="icono"><svg><use href="#i-reloj"/></svg></div>
-    <div><b id="kEve">—</b><span>Eventuales</span></div>
+    <div class="icono"><svg><use href="#i-reloj"/></svg></div><div><b id="kEve">—</b><span>Eventuales</span></div>
   </button>
   <button class="kpi k-rec" data-estado="POR RECUPERAR" title="Más de 90 días sin cargar — clic para filtrar">
-    <div class="icono"><svg><use href="#i-alerta"/></svg></div>
-    <div><b id="kRec">—</b><span>Por recuperar</span></div>
+    <div class="icono"><svg><use href="#i-alerta"/></svg></div><div><b id="kRec">—</b><span>Por recuperar</span></div>
   </button>
-  <div class="kpi k-neutra">
-    <div class="icono"><svg><use href="#i-camion"/></svg></div>
-    <div><b id="kPlacas">—</b><span>Placas en filtro</span></div>
-  </div>
-  <div class="kpi k-neutra">
-    <div class="icono"><svg><use href="#i-rotacion"/></svg></div>
-    <div><b id="kViajes">—</b><span>Viajes en filtro</span></div>
-  </div>
+  <div class="kpi k-neutra"><div class="icono"><svg><use href="#i-camion"/></svg></div><div><b id="kPlacas">—</b><span>Placas en filtro</span></div></div>
+  <div class="kpi k-neutra"><div class="icono"><svg><use href="#i-rotacion"/></svg></div><div><b id="kViajes">—</b><span>Viajes en filtro</span></div></div>
 </section>
 
 <section id="barraFiltros">
   <div class="fila-filtros">
+    <div class="campo" style="flex:1.4;min-width:230px">
+      <label><svg class="ico"><use href="#i-buscar"/></svg> Placas <span class="cuenta" id="cPlacas" style="display:none"></span></label>
+      <div class="multi placas" data-campo="placas">
+        <input type="text" id="inPlacas" placeholder="Escribe una placa y Enter, o pega varias separadas por coma">
+        <div class="sugerencias" id="sgPlacas"></div>
+      </div>
+    </div>
     <div class="campo" style="flex:1;min-width:170px">
-      <label for="fBuscar"><svg class="ico"><use href="#i-buscar"/></svg> Buscar placa</label>
-      <input id="fBuscar" type="search" placeholder="Ej: QOP089">
+      <label><svg class="ico"><use href="#i-pin"/></svg> Origen <span class="cuenta" id="cOrigen" style="display:none"></span></label>
+      <div class="multi" data-campo="origen">
+        <input type="text" id="inOrigen" placeholder="Todos">
+        <div class="sugerencias" id="sgOrigen"></div>
+      </div>
     </div>
-    <div class="campo">
-      <label for="fOrigen"><svg class="ico"><use href="#i-pin"/></svg> Origen</label>
-      <select id="fOrigen"><option value="">Todos</option></select>
+    <div class="campo" style="flex:1;min-width:170px">
+      <label><svg class="ico"><use href="#i-pin"/></svg> Destino <span class="cuenta" id="cDestino" style="display:none"></span></label>
+      <div class="multi" data-campo="destino">
+        <input type="text" id="inDestino" placeholder="Todos">
+        <div class="sugerencias" id="sgDestino"></div>
+      </div>
     </div>
-    <div class="campo">
-      <label for="fDestino"><svg class="ico"><use href="#i-pin"/></svg> Destino</label>
-      <select id="fDestino"><option value="">Todos</option></select>
+    <div class="campo" style="flex:1.2;min-width:190px">
+      <label><svg class="ico"><use href="#i-cliente"/></svg> Cliente <span class="cuenta" id="cCliente" style="display:none"></span></label>
+      <div class="multi" data-campo="cliente">
+        <input type="text" id="inCliente" placeholder="Todos">
+        <div class="sugerencias" id="sgCliente"></div>
+      </div>
     </div>
-    <div class="campo">
-      <label for="fCliente"><svg class="ico"><use href="#i-cliente"/></svg> Cliente</label>
-      <select id="fCliente"><option value="">Todos</option></select>
-    </div>
-    <div class="campo">
-      <label for="fTipologia"><svg class="ico"><use href="#i-camion"/></svg> Tipología</label>
-      <select id="fTipologia"><option value="">Todas</option></select>
+    <div class="campo" style="flex:1;min-width:160px">
+      <label><svg class="ico"><use href="#i-camion"/></svg> Tipología <span class="cuenta" id="cTipologia" style="display:none"></span></label>
+      <div class="multi" data-campo="tipologia">
+        <input type="text" id="inTipologia" placeholder="Todas">
+        <div class="sugerencias" id="sgTipologia"></div>
+      </div>
     </div>
     <div class="campo">
       <label>&nbsp;</label>
-      <button class="btn" style="background:#EEF1F7;color:var(--tinta)" id="btnLimpiar">Limpiar</button>
+      <button class="btn" style="background:#EEF1F7;color:var(--tinta);height:40px" id="btnLimpiar">Limpiar todo</button>
     </div>
   </div>
 </section>
@@ -302,21 +296,17 @@
 <main>
   <p id="resumen"></p>
   <div class="encabezado-tabla">
-    <span>#</span><span>Placa</span><span>Estado</span><span>Tipología / Vehículo</span>
-    <span>Viajes</span><span>Última carga</span><span>Rotación</span><span>Conductor</span><span></span>
+    <span>#</span><span>Placa</span><span>Estado</span><span>Tipología</span>
+    <span>Viajes</span><span>Última carga</span><span>Rotación</span><span>Contactos</span><span></span>
   </div>
   <div id="lista"></div>
-  <div id="vacio">
-    <p style="font-size:38px;margin-bottom:8px">🚛</p>
-    <p><b>Sin placas con esos filtros.</b><br>Prueba ampliando la búsqueda.</p>
-  </div>
+  <div id="vacio"><p style="font-size:38px;margin-bottom:8px">🚛</p><p><b>Sin placas con esos filtros.</b><br>Prueba ampliando la búsqueda.</p></div>
   <div id="pieAcciones"><button class="btn" id="btnMas">Mostrar 50 más</button></div>
 </main>
 
 <script>
 (function(){
   "use strict";
-
   var $ = function(id){ return document.getElementById(id); };
 
   if(!window.DATOS_VIAJES || !window.DATOS_VIAJES.placas){
@@ -334,12 +324,13 @@
   var resultado = [];
   var estadoActivo = "";
 
-  /* contactos desde el archivo de placas */
+  /* selecciones múltiples por campo */
+  var sel = { placas:[], origen:[], destino:[], cliente:[], tipologia:[] };
+
+  /* contactos del archivo de placas */
   var contactos = {};
   if(window.DATOS_PLACAS && window.DATOS_PLACAS.placas){
-    window.DATOS_PLACAS.placas.forEach(function(p){
-      contactos[p.placa] = p;
-    });
+    window.DATOS_PLACAS.placas.forEach(function(p){ contactos[p.placa] = p; });
   }
 
   function esc(s){
@@ -347,85 +338,181 @@
       return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
     });
   }
-  function fmtFecha(iso){
-    if(!iso) return "—";
-    var p = iso.split("-");
-    return p[2]+"/"+p[1]+"/"+p[0];
-  }
-  function haceDias(d){
-    if(d >= 9999) return "sin fecha";
-    if(d === 0) return "hoy";
-    if(d === 1) return "ayer";
-    return "hace " + d + " días";
-  }
+  function fmtFecha(iso){ if(!iso) return "—"; var p = iso.split("-"); return p[2]+"/"+p[1]+"/"+p[0]; }
+  function haceDias(d){ if(d>=9999) return "sin fecha"; if(d===0) return "hoy"; if(d===1) return "ayer"; return "hace "+d+" días"; }
 
-  /* ---------- poblar filtros ---------- */
-  function poblar(id, valores){
-    var sel = $(id);
-    valores.forEach(function(v){
-      var o = document.createElement("option");
-      o.value = v; o.textContent = v;
-      sel.appendChild(o);
-    });
-  }
-  var origenes = {}, destinos = {}, clientes = {}, tipologias = {};
+  /* catálogos para sugerencias */
+  var cat = { placas:{}, origen:{}, destino:{}, cliente:{}, tipologia:{} };
   placas.forEach(function(p){
-    if(p.tip) tipologias[p.tip] = 1;
+    cat.placas[p.placa] = (cat.placas[p.placa]||0) + p.viajes;
+    if(p.tip) cat.tipologia[p.tip] = (cat.tipologia[p.tip]||0)+1;
     p.rutas.forEach(function(r){
-      if(r.o) origenes[r.o] = 1;
-      if(r.d) destinos[r.d] = 1;
-      if(r.c) clientes[r.c] = 1;
+      if(r.o) cat.origen[r.o] = (cat.origen[r.o]||0)+r.n;
+      if(r.d) cat.destino[r.d] = (cat.destino[r.d]||0)+r.n;
+      if(r.c) cat.cliente[r.c] = (cat.cliente[r.c]||0)+r.n;
     });
   });
-  poblar("fOrigen", Object.keys(origenes).sort());
-  poblar("fDestino", Object.keys(destinos).sort());
-  poblar("fCliente", Object.keys(clientes).sort());
-  poblar("fTipologia", Object.keys(tipologias).sort());
-
-  /* ---------- filtros ---------- */
-  function rutaCoincide(r, fo, fd, fc){
-    if(fo && r.o !== fo) return false;
-    if(fd && r.d !== fd) return false;
-    if(fc && r.c !== fc) return false;
-    return true;
+  function listaCat(campo){
+    return Object.keys(cat[campo]).sort(function(a,b){ return cat[campo][b]-cat[campo][a]; });
   }
 
-  function aplicar(){
-    var q  = $("fBuscar").value.trim().toUpperCase();
-    var fo = $("fOrigen").value, fd = $("fDestino").value,
-        fc = $("fCliente").value, ft = $("fTipologia").value;
-    var hayRuta = fo || fd || fc;
+  /* ---------- componente multiselección ---------- */
+  var campos = ["placas","origen","destino","cliente","tipologia"];
+  var idsInput = {placas:"inPlacas",origen:"inOrigen",destino:"inDestino",cliente:"inCliente",tipologia:"inTipologia"};
+  var idsSug   = {placas:"sgPlacas",origen:"sgOrigen",destino:"sgDestino",cliente:"sgCliente",tipologia:"sgTipologia"};
+  var idsCuenta= {placas:"cPlacas",origen:"cOrigen",destino:"cDestino",cliente:"cCliente",tipologia:"cTipologia"};
+  var indiceSug = {};
 
+  function agregar(campo, valor){
+    valor = valor.trim().toUpperCase();
+    if(!valor) return;
+    // si el catálogo lo tiene, respetar; si no (placas tecleadas), igual lo aceptamos
+    if(sel[campo].indexOf(valor) === -1) sel[campo].push(valor);
+    pintarTags(campo);
+    aplicar();
+  }
+  function quitar(campo, valor){
+    sel[campo] = sel[campo].filter(function(v){ return v !== valor; });
+    pintarTags(campo);
+    aplicar();
+  }
+  function pintarTags(campo){
+    var caja = document.querySelector('.multi[data-campo="'+campo+'"]');
+    var input = $(idsInput[campo]);
+    // limpiar tags previos (sin tocar input ni sugerencias)
+    caja.querySelectorAll(".tag").forEach(function(t){ t.remove(); });
+    sel[campo].slice().reverse().forEach(function(v){
+      var tag = document.createElement("span");
+      tag.className = "tag";
+      tag.innerHTML = '<span>'+esc(v)+'</span><b title="Quitar">&times;</b>';
+      tag.querySelector("b").addEventListener("click", function(e){ e.stopPropagation(); quitar(campo, v); });
+      caja.insertBefore(tag, input);
+    });
+    input.placeholder = sel[campo].length ? "" : (campo==="placas" ? "Agregar otra placa…" : (campo==="tipologia"?"Todas":"Todos"));
+    var c = $(idsCuenta[campo]);
+    if(sel[campo].length){ c.style.display="inline-block"; c.textContent = sel[campo].length; }
+    else c.style.display = "none";
+  }
+
+  function abrirSug(campo){
+    var input = $(idsInput[campo]);
+    var caja = $(idsSug[campo]);
+    var q = input.value.trim().toUpperCase();
+    var todos = listaCat(campo).filter(function(v){ return sel[campo].indexOf(v) === -1; });
+    var lista = q ? todos.filter(function(v){ return v.indexOf(q) !== -1; }) : todos;
+    lista = lista.slice(0, 50);
+    indiceSug[campo] = -1;
+
+    if(!lista.length){
+      caja.innerHTML = '<div class="vacio">'+(campo==="placas" && q ? 'Enter para agregar "'+esc(q)+'"' : "Sin coincidencias")+'</div>';
+    } else {
+      caja.innerHTML = lista.map(function(v){
+        return '<div data-val="'+esc(v)+'"><span>'+esc(v)+'</span><span class="n">'+cat[campo][v].toLocaleString("es-CO")+'</span></div>';
+      }).join("");
+      caja.querySelectorAll("div[data-val]").forEach(function(d){
+        d.addEventListener("mousedown", function(e){
+          e.preventDefault();
+          agregar(campo, d.dataset.val);
+          input.value = "";
+          abrirSug(campo);
+        });
+      });
+    }
+    caja.classList.add("abierta");
+  }
+  function cerrarSug(campo){ $(idsSug[campo]).classList.remove("abierta"); }
+
+  campos.forEach(function(campo){
+    var input = $(idsInput[campo]);
+    var caja = document.querySelector('.multi[data-campo="'+campo+'"]');
+    var sug = $(idsSug[campo]);
+
+    caja.addEventListener("click", function(){ input.focus(); });
+    input.addEventListener("focus", function(){ caja.classList.add("foco"); abrirSug(campo); });
+    input.addEventListener("blur", function(){ caja.classList.remove("foco"); setTimeout(function(){ cerrarSug(campo); }, 120); });
+    input.addEventListener("input", function(){
+      // si pega "ABC123, DEF456" o con saltos de línea, repartir
+      if(/[,;\n\t]/.test(input.value)){
+        var partes = input.value.split(/[,;\n\t]+/);
+        partes.forEach(function(p){ if(p.trim()) agregar(campo, p); });
+        input.value = "";
+      }
+      abrirSug(campo);
+    });
+    input.addEventListener("keydown", function(e){
+      var items = sug.querySelectorAll("div[data-val]");
+      if(e.key === "Enter"){
+        e.preventDefault();
+        if(indiceSug[campo] >= 0 && items[indiceSug[campo]]){
+          agregar(campo, items[indiceSug[campo]].dataset.val);
+        } else if(input.value.trim()){
+          agregar(campo, input.value); // acepta lo tecleado (útil en placas)
+        }
+        input.value = "";
+        abrirSug(campo);
+      } else if(e.key === "Backspace" && !input.value && sel[campo].length){
+        quitar(campo, sel[campo][sel[campo].length-1]);
+      } else if(e.key === "ArrowDown"){
+        e.preventDefault();
+        indiceSug[campo] = Math.min(indiceSug[campo]+1, items.length-1);
+        marcarActiva(items, indiceSug[campo]);
+      } else if(e.key === "ArrowUp"){
+        e.preventDefault();
+        indiceSug[campo] = Math.max(indiceSug[campo]-1, 0);
+        marcarActiva(items, indiceSug[campo]);
+      } else if(e.key === "Escape"){ cerrarSug(campo); }
+    });
+  });
+  function marcarActiva(items, i){
+    items.forEach(function(it,k){ it.classList.toggle("activa", k===i); });
+    if(items[i]) items[i].scrollIntoView({block:"nearest"});
+  }
+
+  /* ---------- filtros (lógica TODAS dentro de cada campo) ---------- */
+  function aplicar(){
     var kpi = {FIDELIZADA:0, EVENTUAL:0, "POR RECUPERAR":0};
     var totalViajesFiltro = 0;
+    var hayRuta = sel.origen.length || sel.destino.length || sel.cliente.length;
     resultado = [];
 
     placas.forEach(function(p){
-      if(q && p.placa.indexOf(q) === -1) return;
-      if(ft && p.tip !== ft) return;
+      // placas: si hay lista, la placa debe estar en ella
+      if(sel.placas.length && sel.placas.indexOf(p.placa) === -1) return;
+      // tipología: lógica TODAS -> la placa debe cubrir todas las tipologías pedidas
+      // (una placa tiene una tip dominante, pero validamos contra sus rutas/tip)
+      if(sel.tipologia.length){
+        if(sel.tipologia.indexOf(p.tip) === -1) return; // su tipología debe estar entre las pedidas
+        if(sel.tipologia.length > 1) return; // una placa no puede "ser" dos tipologías a la vez
+      }
 
-      var vF = p.viajes, ultF = p.ultima, rutasF = p.rutas;
+      // rutas que cumplen los filtros de ruta activos
+      var rutasF = p.rutas;
       if(hayRuta){
-        rutasF = p.rutas.filter(function(r){ return rutaCoincide(r, fo, fd, fc); });
-        if(!rutasF.length) return;
-        vF = 0; ultF = "";
-        rutasF.forEach(function(r){
-          vF += r.n;
-          if(r.f > ultF) ultF = r.f;
+        rutasF = p.rutas.filter(function(r){
+          if(sel.origen.length && sel.origen.indexOf(r.o) === -1) return false;
+          if(sel.destino.length && sel.destino.indexOf(r.d) === -1) return false;
+          if(sel.cliente.length && sel.cliente.indexOf(r.c) === -1) return false;
+          return true;
         });
+        if(!rutasF.length) return;
+
+        // lógica TODAS: deben aparecer TODOS los valores elegidos de cada campo
+        if(!cubreTodos(rutasF, "o", sel.origen)) return;
+        if(!cubreTodos(rutasF, "d", sel.destino)) return;
+        if(!cubreTodos(rutasF, "c", sel.cliente)) return;
+      }
+
+      var vF = p.viajes, ultF = p.ultima;
+      if(hayRuta){
+        vF = 0; ultF = "";
+        rutasF.forEach(function(r){ vF += r.n; if(r.f > ultF) ultF = r.f; });
       }
 
       kpi[p.estado]++;
       if(estadoActivo && p.estado !== estadoActivo) return;
 
       totalViajesFiltro += vF;
-      resultado.push({
-        p: p,
-        vF: vF,
-        ultF: ultF,
-        rotF: Math.round((vF / p.meses) * 10) / 10,
-        rutasF: rutasF
-      });
+      resultado.push({ p:p, vF:vF, ultF:ultF, rotF: Math.round((vF/p.meses)*10)/10, rutasF:rutasF });
     });
 
     resultado.sort(function(a,b){ return b.vF - a.vF; });
@@ -441,11 +528,17 @@
     mostrarMas();
   }
 
-  ["fBuscar","fOrigen","fDestino","fCliente","fTipologia"].forEach(function(id){
-    $(id).addEventListener("input", aplicar);
-  });
+  function cubreTodos(rutas, campo, elegidos){
+    if(!elegidos.length) return true;
+    for(var i=0;i<elegidos.length;i++){
+      var hay = rutas.some(function(r){ return r[campo] === elegidos[i]; });
+      if(!hay) return false;
+    }
+    return true;
+  }
+
   $("btnLimpiar").addEventListener("click", function(){
-    ["fBuscar","fOrigen","fDestino","fCliente","fTipologia"].forEach(function(id){ $(id).value = ""; });
+    campos.forEach(function(c){ sel[c] = []; $(idsInput[c]).value = ""; pintarTags(c); });
     estadoActivo = "";
     refrescarKpisActivos();
     aplicar();
@@ -486,64 +579,59 @@
     return '<span class="pill '+clase+'"><span class="punto"></span>'+e+'</span>';
   }
 
-  function contactoHTML(placa){
-    var c = contactos[placa];
-    if(!c) return '<span class="sin-dato">sin datos de contacto</span>';
-    var nombre = (c.cond && c.cond.nombre) || (c.tene && c.tene.nombre) || "";
-    var cel = (c.cond && c.cond.celular) || (c.tene && c.tene.celular) || "";
-    var rol = (c.cond && c.cond.celular) ? "" : " (tenedor)";
-    var h = "";
-    if(nombre) h += '<span class="nom" title="'+esc(nombre)+'">'+esc(nombre)+rol+'</span>';
-    var num = cel.replace(/[^\d+]/g,"");
-    if(num.length >= 7){
-      h += '<a href="tel:'+esc(num)+'"><svg class="ico"><use href="#i-tel"/></svg>'+esc(cel)+'</a>';
-    } else if(!nombre){
-      h = '<span class="sin-dato">sin datos de contacto</span>';
-    }
-    return h;
+  function lineaContacto(clase, icono, persona){
+    if(!persona) return "";
+    var nombre = persona.nombre || "";
+    var cel = (persona.celular || "").replace(/[^\d+]/g,"");
+    var telHTML = cel.length >= 7
+      ? '<a href="tel:'+esc(cel)+'"><svg class="ico"><use href="#i-tel"/></svg>'+esc(persona.celular)+'</a>'
+      : '<span class="sin-dato">sin cel.</span>';
+    var nomHTML = nombre ? '<span class="nom" title="'+esc(nombre)+'">'+esc(nombre)+'</span>' : '<span class="nom sin-dato">sin nombre</span>';
+    return '<div class="contacto-linea"><span class="rolico '+clase+'"><svg><use href="#'+icono+'"/></svg></span>'+nomHTML+telHTML+'</div>';
   }
 
-  function vehiculoTexto(placa, tip){
+  function contactosHTML(placa){
     var c = contactos[placa];
+    if(!c) return '<span class="sin-dato">Placa sin ficha en el archivo de placas</span>';
+    return lineaContacto("rol-cond","i-volante", c.cond) +
+           lineaContacto("rol-tene","i-llave", c.tene) +
+           lineaContacto("rol-prop","i-maletin", c.prop);
+  }
+
+  function vehiculoTexto(placa){
+    var c = contactos[placa];
+    if(!c) return "";
     var partes = [];
-    if(c){
-      if(c.marca) partes.push(c.marca);
-      if(c.modelo) partes.push(c.modelo);
-    }
-    return '<span class="tip">'+esc(tip || "—")+'</span>' +
-      (partes.length ? ' <span style="font-size:12px;color:var(--gris);font-weight:600">'+esc(partes.join(" "))+'</span>' : "");
+    if(c.marca) partes.push(c.marca);
+    if(c.modelo) partes.push(c.modelo);
+    return partes.length ? '<span class="veh">'+esc(partes.join(" "))+'</span>' : "";
   }
 
   function fila(res, rank){
     var p = res.p;
     var el = document.createElement("article");
     el.className = "fila";
-
     var filtrando = res.vF !== p.viajes;
-    var viajesHTML = '<b>'+res.vF.toLocaleString("es-CO")+'</b><span>'+
-      (filtrando ? 'de '+p.viajes.toLocaleString("es-CO")+' totales' : 'viajes')+'</span>';
+    var viajesHTML = '<b>'+res.vF.toLocaleString("es-CO")+'</b><span>'+(filtrando ? 'de '+p.viajes.toLocaleString("es-CO") : 'viajes')+'</span>';
 
     el.innerHTML =
       '<div class="fila-principal">' +
         '<div class="rank">'+rank+'</div>' +
         '<div><span class="badge-placa">'+esc(p.placa)+'</span></div>' +
         '<div>'+pillEstado(p.estado)+'</div>' +
-        '<div>'+vehiculoTexto(p.placa, p.tip)+'</div>' +
+        '<div><span class="tip">'+esc(p.tip||"—")+'</span>'+vehiculoTexto(p.placa)+'</div>' +
         '<div class="celda">'+viajesHTML+'</div>' +
         '<div class="celda"><b style="font-size:13px">'+fmtFecha(res.ultF || p.ultima)+'</b><span>'+haceDias(p.dias)+'</span></div>' +
         '<div class="celda"><b>'+res.rotF.toLocaleString("es-CO")+'</b><span>viajes/mes</span></div>' +
-        '<div class="contacto-mini">'+contactoHTML(p.placa)+'</div>' +
-        '<button class="btn-expandir" title="Ver historial de rutas" aria-label="Ver historial de rutas">' +
-          '<svg class="ico"><use href="#i-chevron"/></svg></button>' +
+        '<div class="contactos">'+contactosHTML(p.placa)+'</div>' +
+        '<button class="btn-expandir" title="Ver historial de rutas" aria-label="Ver historial de rutas"><svg class="ico"><use href="#i-chevron"/></svg></button>' +
       '</div>' +
       '<div class="historial"></div>';
 
     el.querySelector(".btn-expandir").addEventListener("click", function(){
       var abierta = el.classList.toggle("abierta");
       var cont = el.querySelector(".historial");
-      if(abierta && !cont.innerHTML){
-        cont.innerHTML = historialHTML(p, res.rutasF);
-      }
+      if(abierta && !cont.innerHTML) cont.innerHTML = historialHTML(p, res.rutasF);
     });
     return el;
   }
@@ -552,7 +640,6 @@
     var marcadas = {};
     rutasFiltradas.forEach(function(r){ marcadas[r.o+"|"+r.d+"|"+r.c] = 1; });
     var filtrando = rutasFiltradas.length !== p.rutas.length;
-
     var h = '<h4>Historial de rutas · '+p.rutas.length+' combinaciones · primer viaje '+fmtFecha(p.primera)+'</h4>';
     p.rutas.forEach(function(r){
       var resaltada = filtrando && marcadas[r.o+"|"+r.d+"|"+r.c];
@@ -566,19 +653,17 @@
     return h;
   }
 
-  /* ---------- exportar lista de llamadas ---------- */
+  /* ---------- exportar ---------- */
   $("btnExportar").addEventListener("click", function(){
     if(!resultado.length) return;
-    var cab = ["#","PLACA","ESTADO","TIPOLOGIA","VIAJES EN FILTRO","VIAJES TOTALES",
-      "ULTIMA CARGA","DIAS SIN CARGAR","ROTACION VIAJES/MES",
-      "CONDUCTOR","CELULAR CONDUCTOR","TENEDOR","CELULAR TENEDOR","RUTA PRINCIPAL","CLIENTE PRINCIPAL"];
+    var cab = ["#","PLACA","ESTADO","TIPOLOGIA","VIAJES EN FILTRO","VIAJES TOTALES","ULTIMA CARGA","DIAS SIN CARGAR","ROTACION VIAJES/MES",
+      "CONDUCTOR","CEL CONDUCTOR","TENEDOR","CEL TENEDOR","PROPIETARIO","CEL PROPIETARIO","RUTA PRINCIPAL","CLIENTE PRINCIPAL"];
     var filas = resultado.map(function(res, i){
       var p = res.p, c = contactos[p.placa] || {};
+      var co = c.cond||{}, te = c.tene||{}, pr = c.prop||{};
       var r0 = res.rutasF[0] || p.rutas[0] || {};
-      return [i+1, p.placa, p.estado, p.tip, res.vF, p.viajes,
-        fmtFecha(res.ultF || p.ultima), p.dias, res.rotF,
-        (c.cond && c.cond.nombre) || "", (c.cond && c.cond.celular) || "",
-        (c.tene && c.tene.nombre) || "", (c.tene && c.tene.celular) || "",
+      return [i+1, p.placa, p.estado, p.tip, res.vF, p.viajes, fmtFecha(res.ultF || p.ultima), p.dias, res.rotF,
+        co.nombre||"", co.celular||"", te.nombre||"", te.celular||"", pr.nombre||"", pr.celular||"",
         (r0.o ? r0.o+" - "+r0.d : ""), r0.c || ""]
         .map(function(v){ return '"' + String(v===undefined?"":v).replace(/"/g,'""') + '"'; }).join(";");
     });
@@ -591,6 +676,7 @@
     URL.revokeObjectURL(a.href);
   });
 
+  campos.forEach(function(c){ pintarTags(c); });
   aplicar();
 })();
 </script>
