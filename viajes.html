@@ -385,6 +385,23 @@
         <option value="POR RECUPERAR">Por recuperar</option>
       </select>
     </div>
+    <div class="campo" style="min-width:135px">
+      <label><svg class="ico"><use href="#i-camion"/></svg> Tipo flota</label>
+      <select id="fTipoFlota" class="select-filtro">
+        <option value="">Todas</option>
+        <option value="PROPIA">Propia</option>
+        <option value="TERCERO">Tercero</option>
+        <option value="SINDATO">Sin dato</option>
+      </select>
+    </div>
+    <div class="campo" style="min-width:130px">
+      <label><svg class="ico"><use href="#i-capas"/></svg> Alto cubicaje</label>
+      <select id="fAltoCub" class="select-filtro">
+        <option value="">Todos</option>
+        <option value="SI">Solo Alto Cubicaje</option>
+        <option value="NO">Sin Alto Cubicaje</option>
+      </select>
+    </div>
     <div class="campo" style="min-width:150px">
       <label><svg class="ico"><use href="#i-alerta"/></svg> Riesgo PNC</label>
       <select id="fRiesgo" class="select-filtro">
@@ -601,6 +618,8 @@
                   sel.operacion.length;
     var fRiesgo = $("fRiesgo").value;
     var fEstadoFlota = $("fEstadoFlota").value;
+    var fTipoFlota = $("fTipoFlota").value;
+    var fAltoCub = $("fAltoCub").value;
     resultado = [];
 
     placas.forEach(function(p){
@@ -609,6 +628,15 @@
 
       // estado de flota
       if(fEstadoFlota && p.estado !== fEstadoFlota) return;
+
+      // tipo de flota (propia/tercero/sin dato)
+      if(fTipoFlota){
+        if(fTipoFlota === "SINDATO"){ if(p.flotaTipo) return; }
+        else if(p.flotaTipo !== fTipoFlota) return;
+      }
+
+      // alto cubicaje
+      if(fAltoCub && p.ac !== fAltoCub) return;
 
       // filtro de riesgo PNC
       if(fRiesgo){
@@ -688,6 +716,8 @@
   }
 
   $("fRiesgo").addEventListener("change", aplicar);
+  $("fTipoFlota").addEventListener("change", aplicar);
+  $("fAltoCub").addEventListener("change", aplicar);
   $("fEstadoFlota").addEventListener("change", function(){
     estadoActivo = $("fEstadoFlota").value;
     refrescarKpisActivos();
@@ -697,6 +727,8 @@
     campos.forEach(function(c){ sel[c] = []; $(idsInput[c]).value = ""; pintarTags(c); });
     $("fRiesgo").value = "";
     $("fEstadoFlota").value = "";
+    $("fTipoFlota").value = "";
+    $("fAltoCub").value = "";
     estadoActivo = "";
     refrescarKpisActivos();
     aplicar();
@@ -874,7 +906,7 @@
   /* ---------- exportar ---------- */
   $("btnExportar").addEventListener("click", function(){
     if(!resultado.length) return;
-    var cab = ["#","PLACA","ESTADO","TIPOLOGIA","OPERACIONES","VIAJES EN FILTRO","VIAJES TOTALES","ULTIMA CARGA","DIAS SIN CARGAR","ROTACION VIAJES/MES",
+    var cab = ["#","PLACA","ESTADO","TIPOLOGIA","OPERACIONES","TIPO FLOTA","ALTO CUBICAJE","VIAJES EN FILTRO","VIAJES TOTALES","ULTIMA CARGA","DIAS SIN CARGAR","ROTACION VIAJES/MES",
       "PNC TOTAL","PNC ABIERTOS","PNC CERRADOS","PNC ATRIBUIBLES","% ATRIBUIBLES","% PNC/VIAJES","RIESGO PNC","DESCONTADO AFILIADO","TIPO PNC PRINCIPAL",
       "CONDUCTOR","CEL CONDUCTOR","TENEDOR","CEL TENEDOR","PROPIETARIO","CEL PROPIETARIO","RUTA PRINCIPAL","CLIENTE PRINCIPAL"];
     var filas = resultado.map(function(res, i){
@@ -883,7 +915,7 @@
       var n = pncPorPlaca[p.placa] || {};
       var r0 = res.rutasF[0] || p.rutas[0] || {};
       var pctPV = (n.total && p.viajes) ? Math.round(n.total / p.viajes * 1000)/10 : 0;
-      return [i+1, p.placa, p.estado, p.tip, (p.ops||[]).join(" / "), res.vF, p.viajes, fmtFecha(res.ultF || p.ultima), p.dias, res.rotF,
+      return [i+1, p.placa, p.estado, p.tip, (p.ops||[]).join(" / "), (p.flotaTipo||"SIN DATO"), p.ac, res.vF, p.viajes, fmtFecha(res.ultF || p.ultima), p.dias, res.rotF,
         n.total||0, n.abiertos||0, n.cerrados||0, n.atribuibles||0, (n.pctAtrib||0), pctPV, n.riesgo||"SIN PNC", n.dscto||0, n.tipoTop||"",
         co.nombre||"", co.celular||"", te.nombre||"", te.celular||"", pr.nombre||"", pr.celular||"",
         (r0.o ? r0.o+" - "+r0.d : ""), r0.c || ""]

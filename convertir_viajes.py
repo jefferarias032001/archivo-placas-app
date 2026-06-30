@@ -52,6 +52,7 @@ MAPEO_OPERACION = {
             "envio": "Envio", "placa": "Placa", "origen": "Ciudad Origen",
             "destino": "Ciudad Destino", "tipologia": "Tipologia",
             "fecha": "Fecha Creacion", "cliente": "Cliente", "operacion": "Operacion",
+            "contable": "Cuenta Contable",
         },
     },
     "CEDIS": {
@@ -60,6 +61,7 @@ MAPEO_OPERACION = {
             "envio": "Manifiesto", "placa": "Placa (Veh)", "origen": "Origen (Man)",
             "destino": "Destino (Man)", "tipologia": "Tipologia",
             "fecha": "Creacion (Man)", "cliente": "Cliente (Orden)", "operacion": "Operacion (Orden)",
+            "contable": "Contable (Man)",
         },
     },
     "IMPO": {
@@ -68,6 +70,7 @@ MAPEO_OPERACION = {
             "envio": "Envio(compra)", "placa": "Placa", "origen": "Ciudad Origen",
             "destino": "Ciudad Destino", "tipologia": "Tipologia",
             "fecha": "Fecha Creacion", "cliente": "Cliente Nombre", "operacion": "Operacion",
+            "proveedor": "Proveedor Nombre",
         },
     },
     "EXPO": {
@@ -76,6 +79,7 @@ MAPEO_OPERACION = {
             "envio": "Envio(compra)", "placa": "Placa", "origen": "Ciudad Origen",
             "destino": "Ciudad Destino", "tipologia": "Tipologia",
             "fecha": "Fecha Creacion", "cliente": "Cliente Nombre", "operacion": "Operacion",
+            "proveedor": "Proveedor Nombre",
         },
     },
 }
@@ -359,6 +363,30 @@ def region_de(depto):
     return DEPTO_REGION.get(depto, "EJE/OTROS")
 
 
+# Nombre del proveedor que identifica flota PROPIA
+PROVEEDOR_PROPIO = "TRACTOCAR LOGISTICS"
+
+
+def tipo_flota(proveedor):
+    """Propia si el proveedor es Tractocar; Tercero si hay otro proveedor; '' si no hay dato."""
+    p = limpio(proveedor).upper()
+    if not p:
+        return ""          # operaciones sin columna proveedor (Nacional, CEDIS)
+    if PROVEEDOR_PROPIO in p:
+        return "PROPIA"
+    return "TERCERO"
+
+
+def es_alto_cubicaje(cuenta_contable):
+    """Alto cubicaje si la cuenta contable contiene 'AC' como segmento (ej. CGN-AC-0018)."""
+    c = limpio(cuenta_contable).upper()
+    if not c:
+        return False
+    # 'AC' rodeado de guiones o como token, evita falsos positivos dentro de palabras
+    import re as _re
+    return bool(_re.search(r"(^|[-_ ])AC([-_ ]|$)", c))
+
+
 def limpio(v):
     if v is None:
         return ""
@@ -470,6 +498,9 @@ def main():
                 # operación: de la columna si existe, si no el nombre de la carpeta
                 op_fila = limpio(valor(fila, cols.get("operacion", ""))) .upper() or op
                 operaciones_vistas.add(op_fila)
+                # tipo de flota (propia/tercero) y alto cubicaje
+                flota_tipo = tipo_flota(valor(fila, cols.get("proveedor", "")))
+                alto_cub = es_alto_cubicaje(valor(fila, cols.get("contable", "")))
                 if cliente:
                     clientes_finales.add(cliente)
 
@@ -478,11 +509,18 @@ def main():
                     fecha_max = fecha if not fecha_max or fecha > fecha_max else fecha_max
 
                 f = flota.setdefault(placa, {"envios": set(), "rutas": {}, "ult": None,
-                                             "pri": None, "tipologia": {}, "ops": {}})
+                                             "pri": None, "tipologia": {}, "ops": {},
+                                             "flota": {}, "ac": 0, "noac": 0})
                 f["envios"].add(envio)
                 envios_globales.add(envio)
                 resumen_ops[op]["viajes"].add(envio)
                 f["ops"][op_fila] = f["ops"].get(op_fila, 0) + 1
+                if flota_tipo:
+                    f["flota"][flota_tipo] = f["flota"].get(flota_tipo, 0) + 1
+                if alto_cub:
+                    f["ac"] += 1
+                else:
+                    f["noac"] += 1
                 if tip:
                     f["tipologia"][tip] = f["tipologia"].get(tip, 0) + 1
                 if fecha:
@@ -534,6 +572,13 @@ def main():
         ops_placa = sorted(f["ops"], key=f["ops"].get, reverse=True)
         op_top = ops_placa[0] if ops_placa else ""
 
+        # tipo de flota dominante (PROPIA/TERCERO/"" si sin dato)
+        flota_tipo = ""
+        if f["flota"]:
+            flota_tipo = max(f["flota"], key=f["flota"].get)
+        # alto cubicaje: "SI" si la placa tiene al menos un viaje de alto cubicaje
+        ac = "SI" if f["ac"] > 0 else "NO"
+
         placas_out.append({
             "placa": placa,
             "tip": tip,
@@ -546,6 +591,8 @@ def main():
             "rot": round(viajes / meses, 2),
             "opTop": op_top,
             "ops": ops_placa,
+            "flotaTipo": flota_tipo,
+            "ac": ac,
             "rutas": rutas,
         })
 
