@@ -170,6 +170,7 @@
   .ruta .trayecto{font-weight:700}
   .ruta .trayecto .ico{width:13px;height:13px;color:var(--naranja);vertical-align:-2px;margin:0 4px}
   .ruta .cli{font-size:12px;color:var(--gris);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .op-badge{font-size:9.5px;font-weight:800;letter-spacing:.4px;background:#E5EDFB;color:var(--azul);border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:1px}
   .ruta .nv{font-weight:800;text-align:right}
   .ruta .nv small{font-weight:700;color:var(--gris)}
   .ruta .fe{font-size:11.5px;color:var(--gris);font-weight:600;text-align:right}
@@ -257,6 +258,7 @@
     <symbol id="i-flecha" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
     <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
     <symbol id="i-mapa" viewBox="0 0 24 24"><path d="m9 3-6 3v15l6-3 6 3 6-3V3l-6 3-6-3zM9 3v15M15 6v15"/></symbol>
+    <symbol id="i-capas" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 17l9 5 9-5"/></symbol>
     <symbol id="i-cliente" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 5-5.5"/></symbol>
     <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
@@ -367,6 +369,13 @@
         <div class="sugerencias" id="sgTipologia"></div>
       </div>
     </div>
+    <div class="campo" style="flex:1;min-width:150px">
+      <label><svg class="ico"><use href="#i-capas"/></svg> Operación <span class="cuenta" id="cOperacion" style="display:none"></span></label>
+      <div class="multi" data-campo="operacion">
+        <input type="text" id="inOperacion" placeholder="Todas">
+        <div class="sugerencias" id="sgOperacion"></div>
+      </div>
+    </div>
     <div class="campo" style="min-width:140px">
       <label><svg class="ico"><use href="#i-check"/></svg> Estado flota</label>
       <select id="fEstadoFlota" class="select-filtro">
@@ -428,7 +437,7 @@
   var estadoActivo = "";
 
   /* selecciones múltiples por campo */
-  var sel = { placas:[], origen:[], destino:[], cliente:[], tipologia:[], dorig:[], ddest:[], rorig:[], rdest:[] };
+  var sel = { placas:[], origen:[], destino:[], cliente:[], tipologia:[], dorig:[], ddest:[], rorig:[], rdest:[], operacion:[] };
 
   /* contactos del archivo de placas */
   var contactos = {};
@@ -451,7 +460,7 @@
   function haceDias(d){ if(d>=9999) return "sin fecha"; if(d===0) return "hoy"; if(d===1) return "ayer"; return "hace "+d+" días"; }
 
   /* catálogos para sugerencias */
-  var cat = { placas:{}, origen:{}, destino:{}, cliente:{}, tipologia:{}, dorig:{}, ddest:{}, rorig:{}, rdest:{} };
+  var cat = { placas:{}, origen:{}, destino:{}, cliente:{}, tipologia:{}, dorig:{}, ddest:{}, rorig:{}, rdest:{}, operacion:{} };
   placas.forEach(function(p){
     cat.placas[p.placa] = (cat.placas[p.placa]||0) + p.viajes;
     if(p.tip) cat.tipologia[p.tip] = (cat.tipologia[p.tip]||0)+1;
@@ -463,6 +472,7 @@
       if(r.dd) cat.ddest[r.dd] = (cat.ddest[r.dd]||0)+r.n;
       if(r.orr) cat.rorig[r.orr] = (cat.rorig[r.orr]||0)+r.n;
       if(r.dr) cat.rdest[r.dr] = (cat.rdest[r.dr]||0)+r.n;
+      if(r.op) cat.operacion[r.op] = (cat.operacion[r.op]||0)+r.n;
     });
   });
   function listaCat(campo){
@@ -470,10 +480,10 @@
   }
 
   /* ---------- componente multiselección ---------- */
-  var campos = ["placas","origen","destino","cliente","tipologia","dorig","ddest","rorig","rdest"];
-  var idsInput = {placas:"inPlacas",origen:"inOrigen",destino:"inDestino",cliente:"inCliente",tipologia:"inTipologia",dorig:"inDorig",ddest:"inDdest",rorig:"inRorig",rdest:"inRdest"};
-  var idsSug   = {placas:"sgPlacas",origen:"sgOrigen",destino:"sgDestino",cliente:"sgCliente",tipologia:"sgTipologia",dorig:"sgDorig",ddest:"sgDdest",rorig:"sgRorig",rdest:"sgRdest"};
-  var idsCuenta= {placas:"cPlacas",origen:"cOrigen",destino:"cDestino",cliente:"cCliente",tipologia:"cTipologia",dorig:"cDorig",ddest:"cDdest",rorig:"cRorig",rdest:"cRdest"};
+  var campos = ["placas","origen","destino","cliente","tipologia","dorig","ddest","rorig","rdest","operacion"];
+  var idsInput = {placas:"inPlacas",origen:"inOrigen",destino:"inDestino",cliente:"inCliente",tipologia:"inTipologia",dorig:"inDorig",ddest:"inDdest",rorig:"inRorig",rdest:"inRdest",operacion:"inOperacion"};
+  var idsSug   = {placas:"sgPlacas",origen:"sgOrigen",destino:"sgDestino",cliente:"sgCliente",tipologia:"sgTipologia",dorig:"sgDorig",ddest:"sgDdest",rorig:"sgRorig",rdest:"sgRdest",operacion:"sgOperacion"};
+  var idsCuenta= {placas:"cPlacas",origen:"cOrigen",destino:"cDestino",cliente:"cCliente",tipologia:"cTipologia",dorig:"cDorig",ddest:"cDdest",rorig:"cRorig",rdest:"cRdest",operacion:"cOperacion"};
   var indiceSug = {};
 
   function agregar(campo, valor){
@@ -587,7 +597,8 @@
     var kpi = {FIDELIZADA:0, EVENTUAL:0, "POR RECUPERAR":0};
     var totalViajesFiltro = 0;
     var hayRuta = sel.origen.length || sel.destino.length || sel.cliente.length ||
-                  sel.dorig.length || sel.ddest.length || sel.rorig.length || sel.rdest.length;
+                  sel.dorig.length || sel.ddest.length || sel.rorig.length || sel.rdest.length ||
+                  sel.operacion.length;
     var fRiesgo = $("fRiesgo").value;
     var fEstadoFlota = $("fEstadoFlota").value;
     resultado = [];
@@ -625,6 +636,7 @@
           if(sel.ddest.length && sel.ddest.indexOf(r.dd) === -1) return false;
           if(sel.rorig.length && sel.rorig.indexOf(r.orr) === -1) return false;
           if(sel.rdest.length && sel.rdest.indexOf(r.dr) === -1) return false;
+          if(sel.operacion.length && sel.operacion.indexOf(r.op) === -1) return false;
           return true;
         });
         if(!rutasF.length) return;
@@ -637,6 +649,7 @@
         if(!cubreTodos(rutasF, "dd", sel.ddest)) return;
         if(!cubreTodos(rutasF, "orr", sel.rorig)) return;
         if(!cubreTodos(rutasF, "dr", sel.rdest)) return;
+        if(!cubreTodos(rutasF, "op", sel.operacion)) return;
       }
 
       var vF = p.viajes, ultF = p.ultima;
@@ -849,7 +862,7 @@
     p.rutas.forEach(function(r){
       var resaltada = filtrando && marcadas[r.o+"|"+r.d+"|"+r.c];
       h += '<div class="ruta'+(resaltada ? " resaltada" : "")+'">' +
-        '<span class="trayecto">'+esc(r.o)+'<svg class="ico"><use href="#i-flecha"/></svg>'+esc(r.d)+'</span>' +
+        '<span class="trayecto">'+esc(r.o)+'<svg class="ico"><use href="#i-flecha"/></svg>'+esc(r.d)+(r.op?' <span class="op-badge">'+esc(r.op)+'</span>':'')+'</span>' +
         '<span class="cli" title="'+esc(r.c)+'">'+esc(r.c)+'</span>' +
         '<span class="nv">'+r.n.toLocaleString("es-CO")+' <small>viaje'+(r.n===1?"":"s")+'</small></span>' +
         '<span class="fe">últ. '+fmtFecha(r.f)+'</span>' +
@@ -861,7 +874,7 @@
   /* ---------- exportar ---------- */
   $("btnExportar").addEventListener("click", function(){
     if(!resultado.length) return;
-    var cab = ["#","PLACA","ESTADO","TIPOLOGIA","VIAJES EN FILTRO","VIAJES TOTALES","ULTIMA CARGA","DIAS SIN CARGAR","ROTACION VIAJES/MES",
+    var cab = ["#","PLACA","ESTADO","TIPOLOGIA","OPERACIONES","VIAJES EN FILTRO","VIAJES TOTALES","ULTIMA CARGA","DIAS SIN CARGAR","ROTACION VIAJES/MES",
       "PNC TOTAL","PNC ABIERTOS","PNC CERRADOS","PNC ATRIBUIBLES","% ATRIBUIBLES","% PNC/VIAJES","RIESGO PNC","DESCONTADO AFILIADO","TIPO PNC PRINCIPAL",
       "CONDUCTOR","CEL CONDUCTOR","TENEDOR","CEL TENEDOR","PROPIETARIO","CEL PROPIETARIO","RUTA PRINCIPAL","CLIENTE PRINCIPAL"];
     var filas = resultado.map(function(res, i){
@@ -870,7 +883,7 @@
       var n = pncPorPlaca[p.placa] || {};
       var r0 = res.rutasF[0] || p.rutas[0] || {};
       var pctPV = (n.total && p.viajes) ? Math.round(n.total / p.viajes * 1000)/10 : 0;
-      return [i+1, p.placa, p.estado, p.tip, res.vF, p.viajes, fmtFecha(res.ultF || p.ultima), p.dias, res.rotF,
+      return [i+1, p.placa, p.estado, p.tip, (p.ops||[]).join(" / "), res.vF, p.viajes, fmtFecha(res.ultF || p.ultima), p.dias, res.rotF,
         n.total||0, n.abiertos||0, n.cerrados||0, n.atribuibles||0, (n.pctAtrib||0), pctPV, n.riesgo||"SIN PNC", n.dscto||0, n.tipoTop||"",
         co.nombre||"", co.celular||"", te.nombre||"", te.celular||"", pr.nombre||"", pr.celular||"",
         (r0.o ? r0.o+" - "+r0.d : ""), r0.c || ""]

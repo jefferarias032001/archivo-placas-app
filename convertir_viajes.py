@@ -27,12 +27,58 @@ import glob
 from datetime import datetime, date
 
 # ============================================================
-# ⚙️ CONFIGURACIÓN — EDITA ESTA LÍNEA CON TU CARPETA REAL
-# Es la CARPETA que contiene los Excel divididos por meses.
-# Ejemplo:
-#   C:/Users/jarias/OneDrive - TU_EMPRESA/VIAJES NACIONALES
+# ⚙️ CONFIGURACIÓN — CARPETAS DE LAS OPERACIONES
+# Cada operación tiene su carpeta con los Excel (divididos por meses).
+# El script lee TODAS. Si alguna carpeta no existe, la salta avisando.
+# Pon la ruta de la CARPETA CONTENEDORA (la que tiene NACIONAL, CEDIS, etc.)
 # ============================================================
-RUTA_CARPETA_VIAJES = "C:/Users/jarias/OneDrive - TRACTOCAR LOGISTICS SAS/POWER BI JEFFER/ARCHIVOS/NACIONAL"
+RUTA_BASE = "C:/Users/jarias/OneDrive - TRACTOCAR LOGISTICS SAS/POWER BI JEFFER/ARCHIVOS"
+
+CARPETAS_OPERACION = {
+    "NACIONAL": RUTA_BASE + "/NACIONAL",
+    "CEDIS":    RUTA_BASE + "/CEDIS",
+    "IMPO":     RUTA_BASE + "/IMPU",
+    "EXPO":     RUTA_BASE + "/EXPO",
+}
+
+# Cada operación tiene columnas con nombres distintos. Aquí definimos
+# qué columna del Excel corresponde a cada dato que necesitamos.
+# "fila_encabezado" indica en qué fila está el encabezado (IMPO/EXPO traen
+# una fila de título arriba, así que su encabezado está en la fila 2).
+MAPEO_OPERACION = {
+    "NACIONAL": {
+        "fila_encabezado": 1,
+        "cols": {
+            "envio": "Envio", "placa": "Placa", "origen": "Ciudad Origen",
+            "destino": "Ciudad Destino", "tipologia": "Tipologia",
+            "fecha": "Fecha Creacion", "cliente": "Cliente", "operacion": "Operacion",
+        },
+    },
+    "CEDIS": {
+        "fila_encabezado": 1,
+        "cols": {
+            "envio": "Manifiesto", "placa": "Placa (Veh)", "origen": "Origen (Man)",
+            "destino": "Destino (Man)", "tipologia": "Tipologia",
+            "fecha": "Creacion (Man)", "cliente": "Cliente (Orden)", "operacion": "Operacion (Orden)",
+        },
+    },
+    "IMPO": {
+        "fila_encabezado": 2,
+        "cols": {
+            "envio": "Envio(compra)", "placa": "Placa", "origen": "Ciudad Origen",
+            "destino": "Ciudad Destino", "tipologia": "Tipologia",
+            "fecha": "Fecha Creacion", "cliente": "Cliente Nombre", "operacion": "Operacion",
+        },
+    },
+    "EXPO": {
+        "fila_encabezado": 2,
+        "cols": {
+            "envio": "Envio(compra)", "placa": "Placa", "origen": "Ciudad Origen",
+            "destino": "Ciudad Destino", "tipologia": "Tipologia",
+            "fecha": "Fecha Creacion", "cliente": "Cliente Nombre", "operacion": "Operacion",
+        },
+    },
+}
 
 SALIDA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data_viajes.js")
 
@@ -84,85 +130,208 @@ def unificar_cliente(nombre):
 # lista que imprime el script al final y agrégala).
 # ============================================================
 CIUDAD_DEPTO = {
-    # --- Antioquia ---
-    "MEDELLIN": "ANTIOQUIA", "BELLO": "ANTIOQUIA", "ITAGUI": "ANTIOQUIA",
-    "ENVIGADO": "ANTIOQUIA", "SABANETA": "ANTIOQUIA", "LA ESTRELLA": "ANTIOQUIA",
-    "CALDAS": "ANTIOQUIA", "COPACABANA": "ANTIOQUIA", "GIRARDOTA": "ANTIOQUIA",
-    "BARBOSA": "ANTIOQUIA", "RIONEGRO": "ANTIOQUIA", "GUARNE": "ANTIOQUIA",
-    "MARINILLA": "ANTIOQUIA", "LA CEJA": "ANTIOQUIA", "EL RETIRO": "ANTIOQUIA",
-    "RETIRO": "ANTIOQUIA", "EL CARMEN DE VIBORAL": "ANTIOQUIA", "GUATAPE": "ANTIOQUIA",
-    "SANTAFE DE ANTIOQUIA": "ANTIOQUIA", "SANTA FE DE ANTIOQUIA": "ANTIOQUIA",
-    "SOPETRAN": "ANTIOQUIA", "SANTA ROSA DE OSOS": "ANTIOQUIA", "YARUMAL": "ANTIOQUIA",
-    "AMAGA": "ANTIOQUIA", "VENECIA": "ANTIOQUIA", "FREDONIA": "ANTIOQUIA",
-    "SONSON": "ANTIOQUIA", "LA UNION": "ANTIOQUIA", "GUARNE": "ANTIOQUIA",
-    "CISNEROS": "ANTIOQUIA", "PUERTO BERRIO": "ANTIOQUIA", "CAUCASIA": "ANTIOQUIA",
-    "APARTADO": "ANTIOQUIA", "TURBO": "ANTIOQUIA", "CAREPA": "ANTIOQUIA",
-    # --- Cundinamarca / Bogotá ---
-    "BOGOTA": "CUNDINAMARCA", "BOGOTÁ": "CUNDINAMARCA", "BOGOTA D.C.": "CUNDINAMARCA",
-    "SOACHA": "CUNDINAMARCA", "FUNZA": "CUNDINAMARCA", "MADRID": "CUNDINAMARCA",
-    "MOSQUERA": "CUNDINAMARCA", "CHIA": "CUNDINAMARCA", "CAJICA": "CUNDINAMARCA",
-    "ZIPAQUIRA": "CUNDINAMARCA", "GACHANCIPA": "CUNDINAMARCA", "COTA": "CUNDINAMARCA",
-    "TENJO": "CUNDINAMARCA", "TOCANCIPA": "CUNDINAMARCA", "FACATATIVA": "CUNDINAMARCA",
-    "SOPO": "CUNDINAMARCA", "LA CALERA": "CUNDINAMARCA", "PACHO": "CUNDINAMARCA",
-    "VILLA DE SAN DIEGO DE UBATE": "CUNDINAMARCA", "UBATE": "CUNDINAMARCA",
-    "FUSAGASUGA": "CUNDINAMARCA", "GIRARDOT": "CUNDINAMARCA", "GUACHETA": "CUNDINAMARCA",
-    "GUATEQUE": "CUNDINAMARCA", "GUADUAS": "CUNDINAMARCA",
-    # --- Valle del Cauca ---
-    "SANTIAGO DE CALI": "VALLE DEL CAUCA", "CALI": "VALLE DEL CAUCA",
-    "YUMBO": "VALLE DEL CAUCA", "PALMIRA": "VALLE DEL CAUCA", "CARTAGO": "VALLE DEL CAUCA",
-    "BUGA": "VALLE DEL CAUCA", "TULUA": "VALLE DEL CAUCA", "BUENAVENTURA": "VALLE DEL CAUCA",
-    "JAMUNDI": "VALLE DEL CAUCA", "CANDELARIA": "VALLE DEL CAUCA",
-    # --- Cauca (corredor sur, lo agrupo aparte) ---
-    "CALOTO": "CAUCA", "PUERTO TEJADA": "CAUCA", "VILLA RICA": "CAUCA",
-    "SANTANDER DE QUILICHAO": "CAUCA", "POPAYAN": "CAUCA", "GUACHENE": "CAUCA",
-    # --- Costa: Atlántico ---
-    "BARRANQUILLA": "ATLANTICO", "SOLEDAD": "ATLANTICO", "GALAPA": "ATLANTICO",
-    "MALAMBO": "ATLANTICO", "PUERTO COLOMBIA": "ATLANTICO", "SABANALARGA": "ATLANTICO",
-    # --- Costa: Bolívar ---
-    "CARTAGENA": "BOLIVAR", "TURBACO": "BOLIVAR", "MAGANGUE": "BOLIVAR",
-    "ARJONA": "BOLIVAR", "MOMPOS": "BOLIVAR",
-    # --- Costa: Magdalena ---
-    "SANTA MARTA": "MAGDALENA", "CIENAGA": "MAGDALENA", "FUNDACION": "MAGDALENA",
-    "EL BANCO": "MAGDALENA",
-    # --- Costa: Córdoba ---
-    "MONTERIA": "CORDOBA", "CERETE": "CORDOBA", "LORICA": "CORDOBA", "SAHAGUN": "CORDOBA",
-    "PLANETA RICA": "CORDOBA", "MONTELIBANO": "CORDOBA",
-    # --- Costa: Sucre ---
-    "SINCELEJO": "SUCRE", "COROZAL": "SUCRE", "SAMPUES": "SUCRE",
-    # --- Costa: Cesar ---
-    "VALLEDUPAR": "CESAR", "AGUACHICA": "CESAR", "LA JAGUA DE IBIRICO": "CESAR",
-    "BOSCONIA": "CESAR", "CODAZZI": "CESAR",
-    # --- Costa: La Guajira ---
-    "RIOHACHA": "LA GUAJIRA", "MAICAO": "LA GUAJIRA", "FONSECA": "LA GUAJIRA",
-    "ALBANIA": "LA GUAJIRA",
-    # --- Santander ---
-    "BUCARAMANGA": "SANTANDER", "FLORIDABLANCA": "SANTANDER", "GIRON": "SANTANDER",
-    "PIEDECUESTA": "SANTANDER", "BARRANCABERMEJA": "SANTANDER", "SAN GIL": "SANTANDER",
-    "SOCORRO": "SANTANDER", "SABANA DE TORRES": "SANTANDER", "PUERTO WILCHES": "SANTANDER",
-    "BARBOSA SANTANDER": "SANTANDER",
-    # --- Norte de Santander ---
-    "CUCUTA": "NORTE DE SANTANDER", "OCANA": "NORTE DE SANTANDER", "PAMPLONA": "NORTE DE SANTANDER",
-    "LOS PATIOS": "NORTE DE SANTANDER", "VILLA DEL ROSARIO": "NORTE DE SANTANDER",
-    # --- Boyacá ---
-    "TUNJA": "BOYACA", "SOGAMOSO": "BOYACA", "DUITAMA": "BOYACA", "PAIPA": "BOYACA",
-    "CHIQUINQUIRA": "BOYACA", "VILLA DE LEYVA": "BOYACA", "MONIQUIRA": "BOYACA",
-    "PUERTO BOYACA": "BOYACA", "BARBOSA BOYACA": "BOYACA", "SAMACA": "BOYACA",
-    "NOBSA": "BOYACA", "TIBASOSA": "BOYACA",
-    # --- Tolima ---
-    "IBAGUE": "TOLIMA", "ESPINAL": "TOLIMA", "MARIQUITA": "TOLIMA", "HONDA": "TOLIMA",
-    "MELGAR": "TOLIMA", "PURIFICACION": "TOLIMA", "PUERTO TRIUNFO": "ANTIOQUIA",
-    # --- Eje Cafetero ---
-    "PEREIRA": "RISARALDA", "DOSQUEBRADAS": "RISARALDA", "LA VIRGINIA": "RISARALDA",
-    "MANIZALES": "CALDAS_DEP", "VILLAMARIA": "CALDAS_DEP", "CHINCHINA": "CALDAS_DEP",
-    "ARMENIA": "QUINDIO", "MONTENEGRO": "QUINDIO", "CALARCA": "QUINDIO",
-    # --- Huila ---
-    "NEIVA": "HUILA", "PITALITO": "HUILA", "GARZON": "HUILA",
-    # --- Meta ---
-    "VILLAVICENCIO": "META", "ACACIAS": "META", "GRANADA META": "META",
-    # --- Nariño ---
-    "PASTO": "NARINO", "IPIALES": "NARINO", "TUMACO": "NARINO",
-    # --- otros que aparecen ---
-    "PALERMO": "HUILA", "LA UNION": "ANTIOQUIA",
+    # --- AMAZONAS ---
+    "LETICIA": "AMAZONAS",
+    # --- ANTIOQUIA ---
+    "ABEJORRAL": "ANTIOQUIA", "AMAGA": "ANTIOQUIA", "AMALFI": "ANTIOQUIA",
+    "ANDES": "ANTIOQUIA", "APARTADO": "ANTIOQUIA", "ARBOLETES": "ANTIOQUIA",
+    "BARBOSA": "ANTIOQUIA", "BELLAVISTA": "ANTIOQUIA", "BELLO": "ANTIOQUIA",
+    "BELMIRA": "ANTIOQUIA", "BURITICA": "ANTIOQUIA", "CALDAS": "ANTIOQUIA",
+    "CANASGORDAS": "ANTIOQUIA", "CAREPA": "ANTIOQUIA", "CARMEN DE VIBORAL": "ANTIOQUIA",
+    "CAUCASIA": "ANTIOQUIA", "CHIGORODO": "ANTIOQUIA", "CISNEROS": "ANTIOQUIA",
+    "CIUDAD BOLIVAR": "ANTIOQUIA", "CONCEPCION": "ANTIOQUIA", "COPACABANA": "ANTIOQUIA",
+    "DABEIBA": "ANTIOQUIA", "EL BAGRE": "ANTIOQUIA", "EL CARMEN DE VIBORAL": "ANTIOQUIA",
+    "EL RETIRO": "ANTIOQUIA", "EL SANTUARIO": "ANTIOQUIA", "ENTRERRIOS": "ANTIOQUIA",
+    "ENVIGADO": "ANTIOQUIA", "FREDONIA": "ANTIOQUIA", "FRONTINO": "ANTIOQUIA",
+    "GIRARDOTA": "ANTIOQUIA", "GUADALUPE": "ANTIOQUIA", "GUARNE": "ANTIOQUIA",
+    "GUATAPE": "ANTIOQUIA", "ITAGUI": "ANTIOQUIA", "LA CEJA": "ANTIOQUIA",
+    "LA ESTRELLA": "ANTIOQUIA", "LIBORINA": "ANTIOQUIA", "MARINILLA": "ANTIOQUIA",
+    "MEDELLIN": "ANTIOQUIA", "MUTATA": "ANTIOQUIA", "NECHI": "ANTIOQUIA",
+    "NECOCLI": "ANTIOQUIA", "PENOL": "ANTIOQUIA", "PUERTO BERRIO": "ANTIOQUIA",
+    "PUERTO TRIUNFO": "ANTIOQUIA", "REMEDIOS": "ANTIOQUIA", "RETIRO": "ANTIOQUIA",
+    "RIONEGRO": "ANTIOQUIA", "SABANETA": "ANTIOQUIA", "SAN ANTONIO DE PRADO": "ANTIOQUIA",
+    "SAN CARLOS": "ANTIOQUIA", "SAN CRISTOBAL": "ANTIOQUIA", "SAN FELIX": "ANTIOQUIA",
+    "SAN JERONIMO": "ANTIOQUIA", "SAN JUAN DE URABA": "ANTIOQUIA", "SAN LUIS": "ANTIOQUIA",
+    "SAN PEDRO": "ANTIOQUIA", "SAN PEDRO DE URABA": "ANTIOQUIA", "SAN RAFAEL": "ANTIOQUIA",
+    "SANTA BARBARA": "ANTIOQUIA", "SANTA FE DE ANTIOQUIA": "ANTIOQUIA", "SANTA ROSA DE OSOS": "ANTIOQUIA",
+    "SANTAFE DE ANTIOQUIA": "ANTIOQUIA", "SANTUARIO": "ANTIOQUIA", "SEGOVIA": "ANTIOQUIA",
+    "SONSON": "ANTIOQUIA", "SOPETRAN": "ANTIOQUIA", "TAMESIS": "ANTIOQUIA",
+    "TARAZA": "ANTIOQUIA", "TURBO": "ANTIOQUIA", "URRAO": "ANTIOQUIA",
+    "VENECIA": "ANTIOQUIA", "YALI": "ANTIOQUIA", "YARUMAL": "ANTIOQUIA",
+    "ZARAGOZA": "ANTIOQUIA",
+    # --- ARAUCA ---
+    "ARAUCA": "ARAUCA", "ARAUQUITA": "ARAUCA", "SARAVENA": "ARAUCA",
+    "TAME": "ARAUCA",
+    # --- ATLANTICO ---
+    "BARANOA": "ATLANTICO", "BARRANQUILLA": "ATLANTICO", "GALAPA": "ATLANTICO",
+    "JUAN DE ACOSTA": "ATLANTICO", "LURUACO": "ATLANTICO", "MALAMBO": "ATLANTICO",
+    "MANATI": "ATLANTICO", "PALMAR DE VARELA": "ATLANTICO", "PONEDERA": "ATLANTICO",
+    "PUERTO COLOMBIA": "ATLANTICO", "REPELON": "ATLANTICO", "SABANAGRANDE": "ATLANTICO",
+    "SABANALARGA": "ATLANTICO", "SOLEDAD": "ATLANTICO", "TUBARA": "ATLANTICO",
+    # --- BOLIVAR ---
+    "ARJONA": "BOLIVAR", "ARROYOHONDO": "BOLIVAR", "BAYUNCA": "BOLIVAR",
+    "CARTAGENA": "BOLIVAR", "CORDOBA": "BOLIVAR", "EL CARMEN DE BOLIVAR": "BOLIVAR",
+    "GAMBOTE": "BOLIVAR", "MAGANGUE": "BOLIVAR", "MOMPOS": "BOLIVAR",
+    "PASACABALLOS": "BOLIVAR", "SANTA ROSA": "BOLIVAR", "SINCERIN": "BOLIVAR",
+    "TURBACO": "BOLIVAR",
+    # --- BOYACA ---
+    "AQUITANIA": "BOYACA", "ARCABUCO": "BOYACA", "BELEN": "BOYACA",
+    "BOAVITA": "BOYACA", "BOYACA": "BOYACA", "CERINZA": "BOYACA",
+    "CHIQUINQUIRA": "BOYACA", "CIENEGA": "BOYACA", "COMBITA": "BOYACA",
+    "DUITAMA": "BOYACA", "EL COCUY": "BOYACA", "GARAGOA": "BOYACA",
+    "GUATEQUE": "BOYACA", "LA UVITA": "BOYACA", "MIRAFLORES": "BOYACA",
+    "MONIQUIRA": "BOYACA", "NOBSA": "BOYACA", "OTANCHE": "BOYACA",
+    "PAIPA": "BOYACA", "PUERTO BOYACA": "BOYACA", "RAMIRIQUI": "BOYACA",
+    "SABOYA": "BOYACA", "SAMACA": "BOYACA", "SAN LUIS DE GACENO": "BOYACA",
+    "SANTA ROSA DE VITERBO": "BOYACA", "SOATA": "BOYACA", "SOCHA": "BOYACA",
+    "SOGAMOSO": "BOYACA", "SORACA": "BOYACA", "SOTAQUIRA": "BOYACA",
+    "SUSACON": "BOYACA", "SUTAMARCHAN": "BOYACA", "TIBANA": "BOYACA",
+    "TIBASOSA": "BOYACA", "TOCA": "BOYACA", "TUNJA": "BOYACA",
+    "TUTA": "BOYACA", "VENTAQUEMADA": "BOYACA", "VILLA DE LEYVA": "BOYACA",
+    "VIRACACHA": "BOYACA",
+    # --- CALDAS_DEP ---
+    "AGUADAS": "CALDAS_DEP", "ANSERMA": "CALDAS_DEP", "BELALCAZAR": "CALDAS_DEP",
+    "CHINCHINA": "CALDAS_DEP", "LA DORADA": "CALDAS_DEP", "MANIZALES": "CALDAS_DEP",
+    "NEIRA": "CALDAS_DEP", "RIOSUCIO": "CALDAS_DEP", "RISARALDA": "CALDAS_DEP",
+    "SALAMINA": "CALDAS_DEP", "SUPIA": "CALDAS_DEP", "VILLAMARIA": "CALDAS_DEP",
+    "VITERBO": "CALDAS_DEP",
+    # --- CAQUETA ---
+    "BELEN DE LOS ANDAQUIES": "CAQUETA", "CARTAGENA DEL CHAIRA": "CAQUETA", "EL DONCELLO": "CAQUETA",
+    "EL PAUJIL": "CAQUETA", "FLORENCIA": "CAQUETA", "PUERTO RICO": "CAQUETA",
+    "SAN JOSE DE LA FRAGUA": "CAQUETA", "SAN VICENTE DEL CAGUAN": "CAQUETA",
+    # --- CASANARE ---
+    "AGUAZUL": "CASANARE", "HATO COROZAL": "CASANARE", "MANI": "CASANARE",
+    "MONTERREY": "CASANARE", "NUNCHIA": "CASANARE", "PAZ DE ARIPORO": "CASANARE",
+    "PORE": "CASANARE", "TAURAMENA": "CASANARE", "YOPAL": "CASANARE",
+    # --- CAUCA ---
+    "CAJIBIO": "CAUCA", "CALOTO": "CAUCA", "CORINTO": "CAUCA",
+    "EL BORDO": "CAUCA", "GUACHENE": "CAUCA", "MERCADERES": "CAUCA",
+    "MIRANDA": "CAUCA", "MORALES": "CAUCA", "PATIA": "CAUCA",
+    "PIENDAMO": "CAUCA", "POPAYAN": "CAUCA", "PUERTO TEJADA": "CAUCA",
+    "SANTANDER DE QUILICHAO": "CAUCA", "SILVIA": "CAUCA", "TIMBIO": "CAUCA",
+    "VILLA RICA": "CAUCA",
+    # --- CESAR ---
+    "AGUACHICA": "CESAR", "AGUSTIN CODAZZI": "CESAR", "BECERRIL": "CESAR",
+    "BOSCONIA": "CESAR", "CHIMICHAGUA": "CESAR", "CODAZZI": "CESAR",
+    "EL COPEY": "CESAR", "LA JAGUA DE IBIRICO": "CESAR", "LA PAZ": "CESAR",
+    "PAILITAS": "CESAR", "SAN ALBERTO": "CESAR", "VALLEDUPAR": "CESAR",
+    # --- CHOCO ---
+    "ISTMINA": "CHOCO", "QUIBDO": "CHOCO", "SAN FRANCISCO DE QUIBDO": "CHOCO",
+    # --- CORDOBA ---
+    "AYAPEL": "CORDOBA", "CERETE": "CORDOBA", "CIENAGA DE ORO": "CORDOBA",
+    "LORICA": "CORDOBA", "MONTELIBANO": "CORDOBA", "MONTERIA": "CORDOBA",
+    "PLANETA RICA": "CORDOBA", "SAHAGUN": "CORDOBA", "SAN ANTERO": "CORDOBA",
+    "SAN BERNARDO DEL VIENTO": "CORDOBA", "SANTA CRUZ DE LORICA": "CORDOBA",
+    # --- CUNDINAMARCA ---
+    "AGUA DE DIOS": "CUNDINAMARCA", "ANAPOIMA": "CUNDINAMARCA", "ANOLAIMA": "CUNDINAMARCA",
+    "APOSENTO ALTO": "CUNDINAMARCA", "APULO": "CUNDINAMARCA", "ARBELAEZ": "CUNDINAMARCA",
+    "BOGOTA": "CUNDINAMARCA", "BOGOTA D.C.": "CUNDINAMARCA", "BOGOTA DC": "CUNDINAMARCA",
+    "BOGOTÁ": "CUNDINAMARCA", "BOJACA": "CUNDINAMARCA", "CACHIPAY": "CUNDINAMARCA",
+    "CAJICA": "CUNDINAMARCA", "CAQUEZA": "CUNDINAMARCA", "CHIA": "CUNDINAMARCA",
+    "CHOACHI": "CUNDINAMARCA", "CHOCONTA": "CUNDINAMARCA", "COGUA": "CUNDINAMARCA",
+    "COTA": "CUNDINAMARCA", "EL COLEGIO": "CUNDINAMARCA", "EL ROSAL": "CUNDINAMARCA",
+    "FACATATIVA": "CUNDINAMARCA", "FUNZA": "CUNDINAMARCA", "FUSAGASUGA": "CUNDINAMARCA",
+    "GACHANCIPA": "CUNDINAMARCA", "GACHETA": "CUNDINAMARCA", "GIRARDOT": "CUNDINAMARCA",
+    "GUACHETA": "CUNDINAMARCA", "GUADUAS": "CUNDINAMARCA", "GUASCA": "CUNDINAMARCA",
+    "LA CALERA": "CUNDINAMARCA", "LA MESA": "CUNDINAMARCA", "LA RAYA": "CUNDINAMARCA",
+    "LA VEGA": "CUNDINAMARCA", "LENGUAZAQUE": "CUNDINAMARCA", "MADRID": "CUNDINAMARCA",
+    "MADRONAL": "CUNDINAMARCA", "MOSQUERA": "CUNDINAMARCA", "NEMOCON": "CUNDINAMARCA",
+    "NOCAIMA": "CUNDINAMARCA", "PACHO": "CUNDINAMARCA", "PARATEBUENO": "CUNDINAMARCA",
+    "PUENTE DE PIEDRA": "CUNDINAMARCA", "PUERTO SALGAR": "CUNDINAMARCA", "RICAURTE": "CUNDINAMARCA",
+    "SAN ANTONIO DEL TEQUENDAMA": "CUNDINAMARCA", "SAN JUAN DE RIO SECO": "CUNDINAMARCA", "SASAIMA": "CUNDINAMARCA",
+    "SESQUILE": "CUNDINAMARCA", "SIBATE": "CUNDINAMARCA", "SILVANIA": "CUNDINAMARCA",
+    "SIMIJACA": "CUNDINAMARCA", "SOACHA": "CUNDINAMARCA", "SOPO": "CUNDINAMARCA",
+    "SUBACHOQUE": "CUNDINAMARCA", "SUESCA": "CUNDINAMARCA", "TABIO": "CUNDINAMARCA",
+    "TENJO": "CUNDINAMARCA", "TOCAIMA": "CUNDINAMARCA", "TOCANCIPA": "CUNDINAMARCA",
+    "TUNJUELO": "CUNDINAMARCA", "UBATE": "CUNDINAMARCA", "VILLA DE SAN DIEGO DE UBATE": "CUNDINAMARCA",
+    "VILLAPINZON": "CUNDINAMARCA", "VILLETA": "CUNDINAMARCA", "VIOTA": "CUNDINAMARCA",
+    "ZIPACON": "CUNDINAMARCA", "ZIPAQUIRA": "CUNDINAMARCA",
+    # --- GUAINIA ---
+    "INIRIDA": "GUAINIA",
+    # --- GUAVIARE ---
+    "SAN JOSE DEL GUAVIARE": "GUAVIARE",
+    # --- HUILA ---
+    "ACEVEDO": "HUILA", "AGRADO": "HUILA", "AIPE": "HUILA",
+    "ALGECIRAS": "HUILA", "BARAYA": "HUILA", "CAMPOALEGRE": "HUILA",
+    "GARZON": "HUILA", "GIGANTE": "HUILA", "HOBO": "HUILA",
+    "LA ARGENTINA": "HUILA", "LA PLATA": "HUILA", "NEIVA": "HUILA",
+    "OPORAPA": "HUILA", "PAICOL": "HUILA", "PALERMO": "HUILA",
+    "PALESTINA": "HUILA", "PITAL": "HUILA", "PITALITO": "HUILA",
+    "RIVERA": "HUILA", "SALADOBLANCO": "HUILA", "SAN AGUSTIN": "HUILA",
+    "SAN JOSE DE ISNOS": "HUILA", "SUAZA": "HUILA", "TARQUI": "HUILA",
+    "TIMANA": "HUILA", "VILLAVIEJA": "HUILA", "YAGUARA": "HUILA",
+    # --- LA GUAJIRA ---
+    "ALBANIA": "LA GUAJIRA", "DIBULLA": "LA GUAJIRA", "FONSECA": "LA GUAJIRA",
+    "MAICAO": "LA GUAJIRA", "MANAURE": "LA GUAJIRA", "PARAGUACHON": "LA GUAJIRA",
+    "RIOHACHA": "LA GUAJIRA", "URIBIA": "LA GUAJIRA", "VILLANUEVA": "LA GUAJIRA",
+    # --- MAGDALENA ---
+    "ALGARROBO": "MAGDALENA", "CIENAGA": "MAGDALENA", "EL BANCO": "MAGDALENA",
+    "FUNDACION": "MAGDALENA", "GUACHACA": "MAGDALENA", "PLATO": "MAGDALENA",
+    "SANTA MARTA": "MAGDALENA", "SITIONUEVO": "MAGDALENA",
+    # --- META ---
+    "ACACIAS": "META", "CABUYARO": "META", "CASTILLA LA NUEVA": "META",
+    "CUMARAL": "META", "CUMARALITO": "META", "EL CASTILLO": "META",
+    "EL DORADO": "META", "FUENTE DE ORO": "META", "GRANADA": "META",
+    "GUAMAL": "META", "LEJANIAS": "META", "MESETAS": "META",
+    "PUERTO GAITAN": "META", "PUERTO LLERAS": "META", "PUERTO LOPEZ": "META",
+    "RESTREPO": "META", "SAN CARLOS DE GUAROA": "META", "SAN JUAN DE ARAMA": "META",
+    "SAN MARTIN": "META", "VILLAVICENCIO": "META", "VISTA HERMOSA": "META",
+    # --- NARINO ---
+    "CUASPUD": "NARINO", "CUMBAL": "NARINO", "IPIALES": "NARINO",
+    "PASTO": "NARINO", "SAMANIEGO": "NARINO", "SAN JUAN DE PASTO": "NARINO",
+    "SOTOMAYOR": "NARINO", "TUMACO": "NARINO", "TUQUERRES": "NARINO",
+    # --- NORTE DE SANTANDER ---
+    "ARBOLEDAS": "NORTE DE SANTANDER", "CUCUTA": "NORTE DE SANTANDER", "LOS PATIOS": "NORTE DE SANTANDER",
+    "OCANA": "NORTE DE SANTANDER", "PAMPLONA": "NORTE DE SANTANDER", "VILLA DEL ROSARIO": "NORTE DE SANTANDER",
+    # --- PUTUMAYO ---
+    "MOCOA": "PUTUMAYO", "ORITO": "PUTUMAYO", "PUERTO ASIS": "PUTUMAYO",
+    "SIBUNDOY": "PUTUMAYO", "VALLE DEL GUAMUEZ": "PUTUMAYO",
+    # --- QUINDIO ---
+    "ALASKA": "QUINDIO", "ARMENIA": "QUINDIO", "CALARCA": "QUINDIO",
+    "CIRCASIA": "QUINDIO", "FILANDIA": "QUINDIO", "GENOVA": "QUINDIO",
+    "LA TEBAIDA": "QUINDIO", "MONTENEGRO": "QUINDIO", "QUIMBAYA": "QUINDIO",
+    # --- RISARALDA ---
+    "BELEN DE UMBRIA": "RISARALDA", "DOSQUEBRADAS": "RISARALDA", "GUATICA": "RISARALDA",
+    "LA VIRGINIA": "RISARALDA", "PEREIRA": "RISARALDA", "QUINCHIA": "RISARALDA",
+    "SANTA ROSA DE CABAL": "RISARALDA",
+    # --- SANTANDER ---
+    "BARRANCABERMEJA": "SANTANDER", "BRUSELAS": "SANTANDER", "BUCARAMANGA": "SANTANDER",
+    "CASABE": "SANTANDER", "FLORIDABLANCA": "SANTANDER", "GIRON": "SANTANDER",
+    "LEBRIJA": "SANTANDER", "LIZAMA": "SANTANDER", "MALAGA": "SANTANDER",
+    "PIEDECUESTA": "SANTANDER", "PINCHOTE": "SANTANDER", "PUERTO WILCHES": "SANTANDER",
+    "SABANA DE TORRES": "SANTANDER", "SAN GIL": "SANTANDER", "SANTANDER": "SANTANDER",
+    "SOCORRO": "SANTANDER",
+    # --- SUCRE ---
+    "COROZAL": "SUCRE", "EL ROBLE": "SUCRE", "GUARANDA": "SUCRE",
+    "SAMPUES": "SUCRE", "SANTIAGO DE TOLU": "SUCRE", "SINCELEJO": "SUCRE",
+    "TOLUVIEJO": "SUCRE",
+    # --- TOLIMA ---
+    "ALVARADO": "TOLIMA", "AMBALEMA": "TOLIMA", "ATACO": "TOLIMA",
+    "CAJAMARCA": "TOLIMA", "CARMEN DE APICALA": "TOLIMA", "CHAPARRAL": "TOLIMA",
+    "COYAIMA": "TOLIMA", "CUNDAY": "TOLIMA", "DOLORES": "TOLIMA",
+    "ESPINAL": "TOLIMA", "FALAN": "TOLIMA", "FLANDES": "TOLIMA",
+    "FRESNO": "TOLIMA", "GUAMO": "TOLIMA", "GUAYABAL": "TOLIMA",
+    "HONDA": "TOLIMA", "IBAGUE": "TOLIMA", "ICONONZO": "TOLIMA",
+    "LERIDA": "TOLIMA", "LIBANO": "TOLIMA", "MARIQUITA": "TOLIMA",
+    "MELGAR": "TOLIMA", "NATAGAIMA": "TOLIMA", "ORTEGA": "TOLIMA",
+    "PALOCABILDO": "TOLIMA", "PIEDRAS": "TOLIMA", "PLANADAS": "TOLIMA",
+    "PRADO": "TOLIMA", "PURIFICACION": "TOLIMA", "RIOBLANCO": "TOLIMA",
+    "ROVIRA": "TOLIMA", "SALDANA": "TOLIMA", "SAN ANTONIO": "TOLIMA",
+    "SANTA ISABEL": "TOLIMA", "VALLE DE SAN JUAN": "TOLIMA", "VENADILLO": "TOLIMA",
+    # --- VALLE DEL CAUCA ---
+    "ALCALA": "VALLE DEL CAUCA", "ANDALUCIA": "VALLE DEL CAUCA", "ANSERMANUEVO": "VALLE DEL CAUCA",
+    "ARGELIA": "VALLE DEL CAUCA", "BUENAVENTURA": "VALLE DEL CAUCA", "BUGA": "VALLE DEL CAUCA",
+    "BUGALAGRANDE": "VALLE DEL CAUCA", "CAICEDONIA": "VALLE DEL CAUCA", "CALI": "VALLE DEL CAUCA",
+    "CANDELARIA": "VALLE DEL CAUCA", "CARTAGO": "VALLE DEL CAUCA", "DAGUA": "VALLE DEL CAUCA",
+    "DARIEN": "VALLE DEL CAUCA", "EL CERRITO": "VALLE DEL CAUCA", "FLORIDA": "VALLE DEL CAUCA",
+    "GINEBRA": "VALLE DEL CAUCA", "GUACARI": "VALLE DEL CAUCA", "GUADALAJARA DE BUGA": "VALLE DEL CAUCA",
+    "JAMUNDI": "VALLE DEL CAUCA", "LA CUMBRE": "VALLE DEL CAUCA", "LA PAILA": "VALLE DEL CAUCA",
+    "LA VICTORIA": "VALLE DEL CAUCA", "OBANDO": "VALLE DEL CAUCA", "PALMIRA": "VALLE DEL CAUCA",
+    "PRADERA": "VALLE DEL CAUCA", "ROLDANILLO": "VALLE DEL CAUCA", "SANTIAGO DE CALI": "VALLE DEL CAUCA",
+    "SEVILLA": "VALLE DEL CAUCA", "TULUA": "VALLE DEL CAUCA", "VIJES": "VALLE DEL CAUCA",
+    "YUMBO": "VALLE DEL CAUCA", "ZARZAL": "VALLE DEL CAUCA",
+    # --- VICHADA ---
+    "ACEITICO": "VICHADA",
 }
 
 # ============================================================
@@ -224,104 +393,113 @@ def main():
         print("❌ Falta openpyxl. Instálala con:  pip install openpyxl")
         sys.exit(1)
 
-    if not os.path.isdir(RUTA_CARPETA_VIAJES):
-        print("❌ No encuentro la carpeta de viajes:")
-        print("   " + RUTA_CARPETA_VIAJES)
-        print("   Edita RUTA_CARPETA_VIAJES al inicio de convertir_viajes.py")
-        sys.exit(1)
-
-    archivos = sorted(
-        f for f in glob.glob(os.path.join(RUTA_CARPETA_VIAJES, "*.xls*"))
-        if not os.path.basename(f).startswith("~$")  # ignora temporales de Excel
-    )
-    if not archivos:
-        print("❌ La carpeta no tiene archivos .xlsx:")
-        print("   " + RUTA_CARPETA_VIAJES)
-        sys.exit(1)
-
-    print(f"📂 Carpeta: {RUTA_CARPETA_VIAJES}")
-    print(f"   {len(archivos)} archivo(s) encontrados\n")
-
     # ---- acumuladores ----
-    # flota[placa] = {"envios": set, "rutas": {(o,d,cliente): {"envios": set, "ult": date}},
-    #                 "ult": date, "pri": date, "tipologia": {tip: n}}
     flota = {}
     envios_globales = set()
     clientes_finales = set()
+    operaciones_vistas = set()
     fecha_min, fecha_max = None, None
     filas_totales = 0
+    resumen_ops = {}
 
-    COLS = ["Envio", "Placa", "Ciudad Origen", "Ciudad Destino", "Tipologia", "Fecha Creacion", "Cliente"]
+    carpetas_existentes = {op: ruta for op, ruta in CARPETAS_OPERACION.items() if os.path.isdir(ruta)}
+    if not carpetas_existentes:
+        print("❌ No encontré ninguna carpeta de operaciones. Revisa RUTA_BASE y CARPETAS_OPERACION.")
+        for op, ruta in CARPETAS_OPERACION.items():
+            print(f"   {op}: {ruta}")
+        sys.exit(1)
 
-    for ruta_archivo in archivos:
-        nombre = os.path.basename(ruta_archivo)
-        try:
-            wb = load_workbook(ruta_archivo, read_only=True, data_only=True)
-        except Exception as e:
-            print(f"   ⚠️ {nombre}: no se pudo abrir ({e}) — lo salto")
+    for op, carpeta in carpetas_existentes.items():
+        mapeo = MAPEO_OPERACION[op]
+        cols = mapeo["cols"]
+        fila_enc = mapeo["fila_encabezado"]
+
+        archivos = sorted(
+            f for f in glob.glob(os.path.join(carpeta, "*.xls*"))
+            if not os.path.basename(f).startswith("~$")
+        )
+        if not archivos:
+            print(f"📂 {op}: carpeta sin archivos .xlsx — la salto ({carpeta})")
             continue
 
-        # detectar la hoja que tenga Envio y Placa
-        hoja, encabezados = None, None
-        for nh in wb.sheetnames:
-            primera = next(wb[nh].iter_rows(max_row=1, values_only=True), None)
-            if primera and "Envio" in primera and "Placa" in primera:
-                hoja, encabezados = nh, list(primera)
-                break
-        if not hoja:
-            print(f"   ⚠️ {nombre}: ninguna hoja tiene columnas Envio y Placa — lo salto")
-            continue
+        print(f"\n📂 Operación {op}: {len(archivos)} archivo(s) en {carpeta}")
+        resumen_ops[op] = {"archivos": len(archivos), "filas": 0, "viajes": set()}
 
-        idx = {n: i for i, n in enumerate(encabezados) if n}
-        faltan = [c for c in COLS if c not in idx]
-        if faltan:
-            print(f"   ⚠️ {nombre}: faltan columnas {faltan} — lo salto")
-            continue
-
-        n_filas = 0
-        for fila in wb[hoja].iter_rows(min_row=2, values_only=True):
-            def col(nombre_col):
-                i = idx[nombre_col]
-                return fila[i] if i < len(fila) else None
-
-            placa = quitar_prefijo(col("Placa"))
-            envio = quitar_prefijo(col("Envio"))
-            if not placa or not envio:
+        for ruta_archivo in archivos:
+            nombre = os.path.basename(ruta_archivo)
+            try:
+                wb = load_workbook(ruta_archivo, read_only=True, data_only=True)
+            except Exception as e:
+                print(f"   ⚠️ {nombre}: no se pudo abrir ({e}) — lo salto")
                 continue
-            n_filas += 1
-            filas_totales += 1
 
-            fecha = a_fecha(col("Fecha Creacion"))
-            origen = limpio(col("Ciudad Origen")).upper()
-            destino = limpio(col("Ciudad Destino")).upper()
-            cliente = unificar_cliente(limpio(col("Cliente")).upper())
-            if cliente:
-                clientes_finales.add(cliente)
-            tip = limpio(col("Tipologia")).upper()
+            # tomar la hoja con datos y leer su encabezado en la fila indicada
+            ws = wb[wb.sheetnames[0]]
+            todas = list(ws.iter_rows(values_only=True))
+            if len(todas) < fila_enc + 1:
+                print(f"   ⚠️ {nombre}: sin filas suficientes — lo salto")
+                continue
+            encabezados = list(todas[fila_enc - 1])
+            idx = {n: i for i, n in enumerate(encabezados) if n}
 
-            if fecha:
-                fecha_min = fecha if not fecha_min or fecha < fecha_min else fecha_min
-                fecha_max = fecha if not fecha_max or fecha > fecha_max else fecha_max
+            col_placa = cols["placa"]
+            col_envio = cols["envio"]
+            if col_placa not in idx or col_envio not in idx:
+                print(f"   ⚠️ {nombre}: no tiene columnas '{col_placa}'/'{col_envio}' — lo salto")
+                continue
 
-            f = flota.setdefault(placa, {"envios": set(), "rutas": {}, "ult": None, "pri": None, "tipologia": {}})
-            f["envios"].add(envio)
-            envios_globales.add(envio)
-            if tip:
-                f["tipologia"][tip] = f["tipologia"].get(tip, 0) + 1
-            if fecha:
-                f["ult"] = fecha if not f["ult"] or fecha > f["ult"] else f["ult"]
-                f["pri"] = fecha if not f["pri"] or fecha < f["pri"] else f["pri"]
+            def valor(fila, nombre_col):
+                i = idx.get(nombre_col)
+                return fila[i] if i is not None and i < len(fila) else None
 
-            clave = (origen, destino, cliente)
-            r = f["rutas"].setdefault(clave, {"envios": set(), "ult": None})
-            r["envios"].add(envio)
-            if fecha:
-                r["ult"] = fecha if not r["ult"] or fecha > r["ult"] else r["ult"]
+            n_filas = 0
+            for fila in todas[fila_enc:]:
+                placa = quitar_prefijo(valor(fila, col_placa))
+                envio = quitar_prefijo(valor(fila, col_envio))
+                if not placa or not envio:
+                    continue
+                n_filas += 1
+                filas_totales += 1
+                resumen_ops[op]["filas"] += 1
 
-        print(f"   ✅ {nombre}: {n_filas:,} filas")
+                fecha = a_fecha(valor(fila, cols["fecha"]))
+                origen = limpio(valor(fila, cols["origen"])).upper()
+                destino = limpio(valor(fila, cols["destino"])).upper()
+                cliente = unificar_cliente(limpio(valor(fila, cols["cliente"])).upper())
+                tip = limpio(valor(fila, cols["tipologia"])).upper()
+                # operación: de la columna si existe, si no el nombre de la carpeta
+                op_fila = limpio(valor(fila, cols.get("operacion", ""))) .upper() or op
+                operaciones_vistas.add(op_fila)
+                if cliente:
+                    clientes_finales.add(cliente)
+
+                if fecha:
+                    fecha_min = fecha if not fecha_min or fecha < fecha_min else fecha_min
+                    fecha_max = fecha if not fecha_max or fecha > fecha_max else fecha_max
+
+                f = flota.setdefault(placa, {"envios": set(), "rutas": {}, "ult": None,
+                                             "pri": None, "tipologia": {}, "ops": {}})
+                f["envios"].add(envio)
+                envios_globales.add(envio)
+                resumen_ops[op]["viajes"].add(envio)
+                f["ops"][op_fila] = f["ops"].get(op_fila, 0) + 1
+                if tip:
+                    f["tipologia"][tip] = f["tipologia"].get(tip, 0) + 1
+                if fecha:
+                    f["ult"] = fecha if not f["ult"] or fecha > f["ult"] else f["ult"]
+                    f["pri"] = fecha if not f["pri"] or fecha < f["pri"] else f["pri"]
+
+                # la ruta incluye la operación para poder filtrar por corredor + operación
+                clave = (origen, destino, cliente, op_fila)
+                r = f["rutas"].setdefault(clave, {"envios": set(), "ult": None})
+                r["envios"].add(envio)
+                if fecha:
+                    r["ult"] = fecha if not r["ult"] or fecha > r["ult"] else r["ult"]
+
+            print(f"   ✅ {nombre}: {n_filas:,} filas")
 
     if not flota:
-        print("❌ No se pudo leer ningún dato.")
+        print("❌ No se pudo leer ningún dato de ninguna operación.")
         sys.exit(1)
 
     # ---- consolidar ----
@@ -341,16 +519,20 @@ def main():
         tip = max(f["tipologia"], key=f["tipologia"].get) if f["tipologia"] else ""
 
         rutas = []
-        for (o, d, c), r in f["rutas"].items():
+        for (o, d, c, op_r), r in f["rutas"].items():
             od, dd = depto_de(o), depto_de(d)
             rutas.append({
-                "o": o, "d": d, "c": c,
+                "o": o, "d": d, "c": c, "op": op_r,
                 "od": od, "dd": dd,           # departamento origen / destino
                 "orr": region_de(od), "dr": region_de(dd),  # región origen / destino
                 "n": len(r["envios"]),
                 "f": r["ult"].strftime("%Y-%m-%d") if r["ult"] else "",
             })
         rutas.sort(key=lambda x: -x["n"])
+
+        # operación dominante de la placa y lista de todas sus operaciones
+        ops_placa = sorted(f["ops"], key=f["ops"].get, reverse=True)
+        op_top = ops_placa[0] if ops_placa else ""
 
         placas_out.append({
             "placa": placa,
@@ -362,6 +544,8 @@ def main():
             "estado": estado,
             "meses": round(meses, 2),
             "rot": round(viajes / meses, 2),
+            "opTop": op_top,
+            "ops": ops_placa,
             "rutas": rutas,
         })
 
@@ -371,9 +555,9 @@ def main():
         "actualizado": datetime.now().strftime("%d/%m/%Y %H:%M"),
         "desde": fecha_min.strftime("%Y-%m-%d") if fecha_min else "",
         "hasta": fecha_max.strftime("%Y-%m-%d") if fecha_max else "",
-        "archivos": len(archivos),
         "filas": filas_totales,
         "totalViajes": len(envios_globales),
+        "operaciones": sorted(operaciones_vistas),
         "umbralFidelizada": DIAS_FIDELIZADA,
         "umbralEventual": DIAS_EVENTUAL,
         "placas": placas_out,
@@ -398,6 +582,12 @@ def main():
     print(f"\n✅ data_viajes.js generado — {peso:.1f} MB")
     print(f"   {len(placas_out):,} placas · {len(envios_globales):,} viajes · {fecha_min} → {fecha_max}")
     print(f"   Fidelizadas: {fid:,} · Eventuales: {eve:,} · Por recuperar: {rec:,}")
+
+    # Desglose por operación
+    print("\n🚚 Viajes por operación:")
+    for op in sorted(resumen_ops):
+        r = resumen_ops[op]
+        print(f"   {op}: {len(r['viajes']):,} viajes · {r['filas']:,} filas · {r['archivos']} archivo(s)")
 
     # Lista de clientes finales (ya unificados) para que detectes variantes pendientes.
     print(f"\n📋 {len(clientes_finales)} clientes (ya unificados). Revisa si hay variantes que falte agrupar:")
