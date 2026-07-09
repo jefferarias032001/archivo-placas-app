@@ -53,6 +53,7 @@ MAPEO_OPERACION = {
             "destino": "Ciudad Destino", "tipologia": "Tipologia",
             "fecha": "Fecha Creacion", "cliente": "Cliente", "operacion": "Operacion",
             "contable": "Cuenta Contable",
+            "proveedor": "Afiliado",
         },
     },
     "CEDIS": {
@@ -62,6 +63,7 @@ MAPEO_OPERACION = {
             "destino": "Destino (Man)", "tipologia": "Tipologia",
             "fecha": "Creacion (Man)", "cliente": "Cliente (Orden)", "operacion": "Operacion (Orden)",
             "contable": "Contable (Man)",
+            "proveedor": "Nom Afiliado",
         },
     },
     "IMPO": {
@@ -368,10 +370,9 @@ PROVEEDOR_PROPIO = "TRACTOCAR LOGISTICS"
 
 
 def tipo_flota(proveedor):
-    """Propia si el proveedor es Tractocar; Tercero si hay otro proveedor; '' si no hay dato."""
+    """Propia si el afiliado/proveedor es Tractocar; en cualquier otro caso Tercero.
+    (Todas las operaciones traen afiliado o proveedor, así que ya no hay 'sin dato'.)"""
     p = limpio(proveedor).upper()
-    if not p:
-        return ""          # operaciones sin columna proveedor (Nacional, CEDIS)
     if PROVEEDOR_PROPIO in p:
         return "PROPIA"
     return "TERCERO"

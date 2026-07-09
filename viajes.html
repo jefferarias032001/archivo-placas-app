@@ -109,6 +109,8 @@
   .sugerencias div:hover,.sugerencias div.activa{background:#EEF3FB}
   .sugerencias div .n{color:var(--gris);font-weight:700;font-size:12px}
   .sugerencias .vacio{color:var(--gris);cursor:default}
+  .sugerencias .sel-todos{padding:9px 12px;font-size:12.5px;font-weight:800;color:var(--azul);background:#EEF3FB;cursor:pointer;border-bottom:1px solid var(--linea);position:sticky;top:0}
+  .sugerencias .sel-todos:hover{background:#DFE9FA}
   .sugerencias .vacio:hover{background:none}
 
   /* Listado */
@@ -275,6 +277,7 @@
   <nav>
     <a href="index.html">Placas</a>
     <a href="viajes.html" class="activa">Viajes</a>
+    <a href="contactar.html">Contactar</a>
   </nav>
   <div class="header-acciones">
     <button class="btn btn-naranja" id="btnExportar">
@@ -391,7 +394,6 @@
         <option value="">Todas</option>
         <option value="PROPIA">Propia</option>
         <option value="TERCERO">Tercero</option>
-        <option value="SINDATO">Sin dato</option>
       </select>
     </div>
     <div class="campo" style="min-width:130px">
@@ -535,6 +537,12 @@
     else c.style.display = "none";
   }
 
+  function agregarTodos(campo, lista){
+    lista.forEach(function(v){ if(sel[campo].indexOf(v) === -1) sel[campo].push(v); });
+    pintarTags(campo);
+    aplicar();
+  }
+
   function abrirSug(campo){
     var input = $(idsInput[campo]);
     var caja = $(idsSug[campo]);
@@ -547,9 +555,23 @@
     if(!lista.length){
       caja.innerHTML = '<div class="vacio">'+(campo==="placas" && q ? 'Enter para agregar "'+esc(q)+'"' : "Sin coincidencias")+'</div>';
     } else {
-      caja.innerHTML = lista.map(function(v){
+      // "Seleccionar todos" (menos en placas). Respeta el texto de búsqueda.
+      var cabecera = "";
+      if(campo !== "placas" && lista.length > 1){
+        cabecera = '<div class="sel-todos" data-todos="1">✓ Seleccionar '+(q?'los '+lista.length+' que coinciden':'todos ('+lista.length+')')+'</div>';
+      }
+      caja.innerHTML = cabecera + lista.map(function(v){
         return '<div data-val="'+esc(v)+'"><span>'+esc(v)+'</span><span class="n">'+cat[campo][v].toLocaleString("es-CO")+'</span></div>';
       }).join("");
+      var todosBtn = caja.querySelector('.sel-todos');
+      if(todosBtn){
+        todosBtn.addEventListener("mousedown", function(e){
+          e.preventDefault();
+          agregarTodos(campo, lista);
+          input.value = "";
+          abrirSug(campo);
+        });
+      }
       caja.querySelectorAll("div[data-val]").forEach(function(d){
         d.addEventListener("mousedown", function(e){
           e.preventDefault();
@@ -629,11 +651,8 @@
       // estado de flota
       if(fEstadoFlota && p.estado !== fEstadoFlota) return;
 
-      // tipo de flota (propia/tercero/sin dato)
-      if(fTipoFlota){
-        if(fTipoFlota === "SINDATO"){ if(p.flotaTipo) return; }
-        else if(p.flotaTipo !== fTipoFlota) return;
-      }
+      // tipo de flota (propia/tercero)
+      if(fTipoFlota && p.flotaTipo !== fTipoFlota) return;
 
       // alto cubicaje
       if(fAltoCub && p.ac !== fAltoCub) return;
@@ -647,37 +666,26 @@
         else if(fRiesgo === "MEDIO"){ if(!n || (n.riesgo !== "ALTO" && n.riesgo !== "MEDIO")) return; }
       }
 
-      // tipología: lógica TODAS -> la placa debe cubrir todas las tipologías pedidas
+      // tipología: lógica O -> basta con que la tipología de la placa esté entre las elegidas
       if(sel.tipologia.length){
         if(sel.tipologia.indexOf(p.tip) === -1) return;
-        if(sel.tipologia.length > 1) return; // una placa no puede "ser" dos tipologías a la vez
       }
 
-      // rutas que cumplen los filtros de ruta activos
+      // rutas que cumplen los filtros de ruta (lógica O: una ruta pasa si cumple
+      // AL MENOS UNO de los valores elegidos en CUALQUIERA de los campos activos).
       var rutasF = p.rutas;
       if(hayRuta){
         rutasF = p.rutas.filter(function(r){
-          if(sel.origen.length && sel.origen.indexOf(r.o) === -1) return false;
-          if(sel.destino.length && sel.destino.indexOf(r.d) === -1) return false;
-          if(sel.cliente.length && sel.cliente.indexOf(r.c) === -1) return false;
-          if(sel.dorig.length && sel.dorig.indexOf(r.od) === -1) return false;
-          if(sel.ddest.length && sel.ddest.indexOf(r.dd) === -1) return false;
-          if(sel.rorig.length && sel.rorig.indexOf(r.orr) === -1) return false;
-          if(sel.rdest.length && sel.rdest.indexOf(r.dr) === -1) return false;
-          if(sel.operacion.length && sel.operacion.indexOf(r.op) === -1) return false;
-          return true;
+          return (sel.origen.length && sel.origen.indexOf(r.o) !== -1) ||
+                 (sel.destino.length && sel.destino.indexOf(r.d) !== -1) ||
+                 (sel.cliente.length && sel.cliente.indexOf(r.c) !== -1) ||
+                 (sel.dorig.length && sel.dorig.indexOf(r.od) !== -1) ||
+                 (sel.ddest.length && sel.ddest.indexOf(r.dd) !== -1) ||
+                 (sel.rorig.length && sel.rorig.indexOf(r.orr) !== -1) ||
+                 (sel.rdest.length && sel.rdest.indexOf(r.dr) !== -1) ||
+                 (sel.operacion.length && sel.operacion.indexOf(r.op) !== -1);
         });
-        if(!rutasF.length) return;
-
-        // lógica TODAS: deben aparecer TODOS los valores elegidos de cada campo
-        if(!cubreTodos(rutasF, "o", sel.origen)) return;
-        if(!cubreTodos(rutasF, "d", sel.destino)) return;
-        if(!cubreTodos(rutasF, "c", sel.cliente)) return;
-        if(!cubreTodos(rutasF, "od", sel.dorig)) return;
-        if(!cubreTodos(rutasF, "dd", sel.ddest)) return;
-        if(!cubreTodos(rutasF, "orr", sel.rorig)) return;
-        if(!cubreTodos(rutasF, "dr", sel.rdest)) return;
-        if(!cubreTodos(rutasF, "op", sel.operacion)) return;
+        if(!rutasF.length) return;   // la placa no tiene ninguna ruta que cumpla
       }
 
       var vF = p.viajes, ultF = p.ultima;
