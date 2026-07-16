@@ -695,19 +695,20 @@
         if(sel.tipologia.indexOf(p.tip) === -1) return;
       }
 
-      // rutas que cumplen los filtros de ruta (lógica O: una ruta pasa si cumple
-      // AL MENOS UNO de los valores elegidos en CUALQUIERA de los campos activos).
+      // rutas que cumplen los filtros de ruta:
+      // AND entre campos distintos, OR dentro de cada campo (selección múltiple).
       var rutasF = p.rutas;
       if(hayRuta){
         rutasF = p.rutas.filter(function(r){
-          return (sel.origen.length && sel.origen.indexOf(r.o) !== -1) ||
-                 (sel.destino.length && sel.destino.indexOf(r.d) !== -1) ||
-                 (sel.cliente.length && sel.cliente.indexOf(r.c) !== -1) ||
-                 (sel.dorig.length && sel.dorig.indexOf(r.od) !== -1) ||
-                 (sel.ddest.length && sel.ddest.indexOf(r.dd) !== -1) ||
-                 (sel.rorig.length && sel.rorig.indexOf(r.orr) !== -1) ||
-                 (sel.rdest.length && sel.rdest.indexOf(r.dr) !== -1) ||
-                 (sel.operacion.length && sel.operacion.indexOf(r.op) !== -1);
+          if(sel.cliente.length   && sel.cliente.indexOf(r.c)    === -1) return false;
+          if(sel.operacion.length && sel.operacion.indexOf(r.op) === -1) return false;
+          if(sel.origen.length    && sel.origen.indexOf(r.o)     === -1) return false;
+          if(sel.destino.length   && sel.destino.indexOf(r.d)    === -1) return false;
+          if(sel.dorig.length     && sel.dorig.indexOf(r.od)     === -1) return false;
+          if(sel.ddest.length     && sel.ddest.indexOf(r.dd)     === -1) return false;
+          if(sel.rorig.length     && sel.rorig.indexOf(r.orr)    === -1) return false;
+          if(sel.rdest.length     && sel.rdest.indexOf(r.dr)     === -1) return false;
+          return true;
         });
         if(!rutasF.length) return;   // la placa no tiene ninguna ruta que cumpla
       }
