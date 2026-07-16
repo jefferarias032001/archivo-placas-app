@@ -157,6 +157,9 @@
     header{padding:10px 14px;gap:8px}.logo img{height:32px}.logo .titulo{display:none}
     .layout{padding:0 14px 50px}
   }
+  .info-strip{background:var(--blanco);border-bottom:1px solid var(--linea);padding:7px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--gris)}
+  .info-strip .desc{display:flex;align-items:center;gap:8px}
+  .chip-fecha{display:none;align-items:center;gap:5px;background:var(--naranja-suave);color:#A35E00;border:1px solid rgba(243,154,31,.35);border-radius:20px;padding:3px 11px;font-size:12px;font-weight:700;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -191,6 +194,17 @@
     <a href="contactar.html" class="activa">Contactar</a>
   </nav>
 </header>
+
+<div class="info-strip">
+  <span class="desc">
+    <svg class="ico"><use href="#i-mensaje"/></svg>
+    Filtra la flota por tipología y última actividad, y genera mensajes de WhatsApp para convocar conductores a un viaje disponible.
+  </span>
+  <span class="chip-fecha" id="chipFecha">
+    <svg class="ico" style="width:13px;height:13px"><use href="#i-reloj"/></svg>
+    Actualizado:&nbsp;<b id="fechaTexto">—</b>
+  </span>
+</div>
 
 <section id="errorDatos" style="display:none;max-width:680px;margin:10vh auto;text-align:center;padding:0 20px">
   <h2 style="font-size:24px;font-weight:800;margin-bottom:10px">Faltan los datos de viajes</h2>
@@ -346,6 +360,8 @@
   }
   var V = window.DATOS_VIAJES;
   var placas = V.placas;
+  var _fecha = (window.DATOS_PLACAS && window.DATOS_PLACAS.actualizado) || V.actualizado || "";
+  if(_fecha){ $("fechaTexto").textContent = _fecha; $("chipFecha").style.display = "inline-flex"; }
   var POR_PAGINA = 40;
   var visibles = 0;
   var resultado = [];

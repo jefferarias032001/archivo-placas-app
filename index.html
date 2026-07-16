@@ -293,6 +293,9 @@
     .campo{flex:1 1 45%}
     .campo.full{flex:1 1 100%}
   }
+  .info-strip{background:var(--blanco);border-bottom:1px solid var(--linea);padding:7px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--gris)}
+  .info-strip .desc{display:flex;align-items:center;gap:8px}
+  .chip-fecha{display:none;align-items:center;gap:5px;background:var(--naranja-suave);color:#A35E00;border:1px solid rgba(243,154,31,.35);border-radius:20px;padding:3px 11px;font-size:12px;font-weight:700;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -338,6 +341,17 @@
     </button>
   </div>
 </header>
+
+<div class="info-strip">
+  <span class="desc">
+    <svg class="ico"><use href="#i-camion"/></svg>
+    Consulta el directorio completo de vehículos y conductores — filtra por tipología, estado o búsqueda libre, y exporta en CSV.
+  </span>
+  <span class="chip-fecha" id="chipFecha">
+    <svg class="ico" style="width:13px;height:13px"><use href="#i-reloj"/></svg>
+    Actualizado:&nbsp;<b id="fechaTexto">—</b>
+  </span>
+</div>
 
 <!-- Indicadores -->
 <section id="kpis" aria-label="Indicadores generales">
@@ -570,6 +584,7 @@
     $("kpiTipologias").textContent = tipos;
     $("kpiFecha").textContent = actualizado ? actualizado.split(" ")[0] : "hoy";
     $("kpiFecha").title = actualizado || "";
+    if(actualizado){ $("fechaTexto").textContent = actualizado; $("chipFecha").style.display = "inline-flex"; }
 
     $("zonaCarga").style.display = "none";
     $("kpis").style.display = "grid";
