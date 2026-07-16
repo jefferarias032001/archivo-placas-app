@@ -3,6 +3,8 @@
 // ================================================
 window.CORREOS_AUTORIZADOS = [
   "jarias@tractocar.com",
+  "kparedes@tractocar.com",
+  "sduenas@tractocar.com"
   // Agrega más correos así:
   // "nombre@tractocar.com",
   // "otro@empresa.com",
